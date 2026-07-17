@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "eslint.config.js",
+    "src/types.ts"
+  ],
+  "ignoreExports": [
+    {
+      "file": "eslint.config.js",
+      "exports": ["*"]
+    }
+  ],
+  "rules": {}
+}

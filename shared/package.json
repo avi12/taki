@@ -1,0 +1,29 @@
+{
+  "name": "@taki/shared",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./eslint": "./eslint.config.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "@eslint/js": ">=10",
+    "@stylistic/eslint-plugin": ">=5",
+    "eslint": ">=10",
+    "eslint-plugin-import": ">=2",
+    "eslint-plugin-import-newlines": ">=2",
+    "eslint-plugin-perfectionist": ">=5",
+    "globals": ">=17",
+    "typescript-eslint": ">=8"
+  }
+}
