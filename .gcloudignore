@@ -1,0 +1,7 @@
+.gcloudignore
+.git
+frontend/
+firebase/
+firebase.json
+*.md
+node_modules/
