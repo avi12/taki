@@ -1,0 +1,53 @@
+{
+  "name": "taki",
+  "private": true,
+  "version": "0.1.123",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 5174",
+    "build": "vite build",
+    "deploy": "pnpm lint:all && pnpx fallow fix --yes && pnpm build && cd .. && cross-env GOOGLE_APPLICATION_CREDENTIALS=firebase/taki.json pnpm exec firebase deploy",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check",
+    "check:watch": "svelte-kit sync && svelte-check --watch",
+    "lint": "eslint --fix",
+    "stylelint": "stylelint \"src/**/*.{svelte,css}\" --fix",
+    "lint:all": "pnpm -w lint && pnpm lint && pnpm check && pnpm stylelint"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.70.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@types/node": "^26.1.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.7.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-newlines": "^2.0.0",
+    "eslint-plugin-perfectionist": "^5.10.0",
+    "eslint-plugin-svelte": "^3.20.0",
+    "fallow": "^3.6.0",
+    "firebase-tools": "^15.24.0",
+    "globals": "^17.7.0",
+    "stylelint": "^17.14.0",
+    "stylelint-config-ccb": "^3.32.0",
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "svelte-eslint-parser": "^1.8.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.64.0",
+    "vite": "^8.1.5",
+    "vite-plugin-favicon2": "^1.1.5"
+  },
+  "pnpm": {
+    "allowBuild": [
+      "sharp"
+    ]
+  },
+  "dependencies": {
+    "@taki/shared": "workspace:*"
+  }
+}

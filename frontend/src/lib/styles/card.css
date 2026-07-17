@@ -1,0 +1,59 @@
+.card {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--card-w);
+  height: var(--card-h);
+  border: clamp(3px, 0.4vw, 4px) solid rgb(255 255 255 / 85%);
+  border-radius: var(--card-br);
+  background: linear-gradient(160deg, var(--card-color, #0d1b4b), var(--card-dark, #060e2a));
+  color: white;
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.25s;
+  isolation: isolate;
+}
+
+/* White tilted oval on card face */
+.card-oval {
+  position: absolute;
+  z-index: 1;
+  width: 115%;
+  height: 82%;
+  border-radius: 50%;
+  background: white;
+  opacity: 96%;
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 8%);
+  rotate: -25deg;
+}
+
+.card-inner {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Card back */
+.card-back-inner {
+  background: linear-gradient(145deg, #0d1b4b, #060e2a);
+}
+
+.card-back-oval {
+  position: absolute;
+  z-index: 1;
+  width: 115%;
+  height: 82%;
+  border: 2px solid var(--card-back-oval-border);
+  border-radius: 50%;
+  background: var(--card-back-oval-bg);
+  rotate: -25deg;
+}
