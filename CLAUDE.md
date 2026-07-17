@@ -1,6 +1,6 @@
 # Project Purpose
 
-A real-time multiplayer implementation of Taki, the Israeli card game. Players create or join rooms via shared links and play against each other live. The game supports 2–6 players, Hebrew and English UI, and custom rules (No Mercy mode).
+A real-time multiplayer implementation of Taki, the Israeli card game. Players create or join rooms via shared links and play against each other live. The game supports 2 or more players, Hebrew and English UI, and custom rules (No Mercy mode).
 
 ## Architecture
 

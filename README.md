@@ -20,7 +20,7 @@ Taki is a fast, colorful shedding-type card game. This is a from-scratch **real-
 ## Features
 
 - 🌐 **Real-time multiplayer** over WebSockets — every move is broadcast instantly
-- 👥 **2–6 players** per room, joinable by link
+- 👥 **2+ players** per room, joinable by link
 - 🔤 **Bilingual UI** — Hebrew (RTL) and English
 - 🔌 **Reconnection & mid-game join** — refresh, drop, or switch devices without losing your seat
 - 🃏 **Full Taki rule set** — Taki runs, Super Taki, +2 / +3 / +4, Stop, Change Direction, Change Color, King
