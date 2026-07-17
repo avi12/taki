@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "categories": { "correctness": "error" },
+  "env": { "browser": true, "node": true, "builtin": true },
+  "globals": { "browser": "readonly", "chrome": "readonly", "__APP_VERSION__": "readonly" },
+  "rules": {
+    "no-void": ["error", { "allowAsStatement": true }],
+    "prefer-const": "error",
+    "no-nested-ternary": "error",
+    "curly": ["error", "all"],
+    "object-shorthand": ["error", "always", { "avoidExplicitReturnArrows": true }],
+    "id-length": ["error", { "min": 3, "exceptions": ["z","_","i","j","T","K","V","E","R","fs","id","os","e","x","y","db","ws","js","to"], "properties": "never" }],
+    "unicorn/no-empty-file": "off",
+    "func-style": ["error", "declaration", { "allowArrowFunctions": false }],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-control-regex": "off",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/unbound-method": "off",
+    "typescript/await-thenable": "off",
+    "typescript/no-base-to-string": "off",
+    "typescript/restrict-template-expressions": "off",
+    "typescript/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_", "ignoreRestSiblings": true }],
+    "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
+    "import/first": "error"
+  },
+  "overrides": [
+    { "files": ["**/*.svelte"], "rules": { "typescript/no-explicit-any": "off", "prefer-const": "off" } }
+  ],
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/.svelte-kit/**",
+    "**/dist/**",
+    "frontend/eslint-rules/**"
+  ]
+}

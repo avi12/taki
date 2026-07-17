@@ -1,0 +1,30 @@
+{
+  "name": "taki-root",
+  "private": true,
+  "description": "Real-time multiplayer Taki — the Israeli card game — played live in the browser.",
+  "license": "MIT",
+  "author": {
+    "name": "Avi",
+    "url": "https://avi12.com"
+  },
+  "homepage": "https://avi12.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avi12/taki.git"
+  },
+  "packageManager": "pnpm@10.30.1",
+  "scripts": {
+    "lint": "oxlint --type-aware --fix"
+  },
+  "devDependencies": {
+    "oxlint": "^1.74.0",
+    "oxlint-tsgolint": "^0.25.0",
+    "postcss-html": "^1.8.1"
+  },
+  "pnpm": {
+    "allowBuild": [
+      "sharp",
+      "esbuild"
+    ]
+  }
+}
