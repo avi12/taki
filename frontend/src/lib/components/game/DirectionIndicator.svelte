@@ -10,7 +10,21 @@
 <div class="direction-indicator">
   {#key arrowAnimKey}
     {#if direction === 1}
-      <!-- Counter-clockwise arrow (direction=1 visually goes right->top-left = CCW) -->
+      <!-- direction=1 advances to the next seat index: the active player sweeps
+           left->right across the opponents row, which reads as clockwise. -->
+      <svg
+        class="direction-svg"
+        class:spin-cw={arrowAnimKey > 0}
+        height="64"
+        viewBox="0 0 40 40"
+        width="64"
+      >
+        <!-- eslint-disable-next-line @stylistic/max-len -->
+        <path d="M20 6 A14 14 0 1 1 6 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3.5"/>
+        <polygon fill="currentColor" points="6,16 10,23 2,23"/>
+      </svg>
+    {:else}
+      <!-- direction=-1 advances to the previous seat index: right->left = counter-clockwise. -->
       <svg
         class="direction-svg"
         class:spin-ccw={arrowAnimKey > 0}
@@ -21,19 +35,6 @@
         <!-- eslint-disable-next-line @stylistic/max-len -->
         <path d="M20 6 A14 14 0 1 0 34 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3.5"/>
         <polygon fill="currentColor" points="34,16 30,23 38,23"/>
-      </svg>
-    {:else}
-      <!-- Clockwise arrow (direction=-1 visually goes left->top-right = CW) -->
-      <svg
-        class="direction-svg"
-        class:spin-cw={arrowAnimKey > 0}
-        height="64"
-        viewBox="0 0 40 40"
-        width="64"
-      >
-        <!-- eslint-disable-next-line @stylistic/max-len -->
-        <path d="M20 6 A14 14 0 1 1 6 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3.5"/>
-        <polygon fill="currentColor" points="6,24 2,17 10,17"/>
       </svg>
     {/if}
   {/key}
