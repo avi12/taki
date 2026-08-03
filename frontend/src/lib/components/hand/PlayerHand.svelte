@@ -290,7 +290,10 @@
       --hand-edge-padding: 44px;
       --available: calc(100vw - 2 * var(--hand-edge-padding));
 
-      overflow-x: auto;
+      /* Horizontal-only scroll. Without the explicit vertical value, overflow-x: auto
+         forces overflow-y to compute to auto, letting a stray touch-pan lift the cards
+         up into the fixed name pill. */
+      overflow: auto hidden;
       padding: 80px var(--hand-edge-padding) 0;
       scrollbar-width: none;
 
@@ -328,6 +331,12 @@
       width: var(--computed-card-w);
       height: calc(var(--computed-card-w) * 1.55);
       margin-inline-end: max(calc(-0.4 * var(--computed-card-w)), min(0px, var(--formula-margin)));
+
+      /* The escape zone below overflows the horizontal scroller vertically; touch
+         drag relies on pointer capture, not this zone, so drop it here. */
+      &::after {
+        content: none;
+      }
     }
 
     /* Invisible zone below the card so it doesn't escape the cursor when lifted */
