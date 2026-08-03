@@ -106,6 +106,12 @@
     & > * {
       pointer-events: auto;
     }
+
+    /* On touch the hand's full-width transparent top-padding (z-index 100)
+       overlays this pill; lift it above so the rename button stays tappable. */
+    :global(html.touch) & {
+      z-index: 101;
+    }
   }
 
   .my-avatar {
@@ -148,9 +154,9 @@
   .rename-input {
     width: 100px;
     padding: 1px 4px;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid var(--input-border);
     border-radius: 4px;
-    background: rgb(255 255 255 / 12%);
+    background: var(--input-bg);
     color: var(--text);
     outline: none;
     font-family: inherit;
