@@ -147,7 +147,7 @@
   }
 
   .countdown {
-    color: rgb(255 255 255 / 50%);
+    color: var(--text-muted);
     font-weight: 700;
     font-size: 0.75rem;
     letter-spacing: 0.03em;

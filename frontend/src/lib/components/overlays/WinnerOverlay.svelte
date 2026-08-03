@@ -421,15 +421,19 @@
     box-sizing: border-box;
     min-width: 0;
     padding: 0.65rem 1rem;
-    border: 1px solid rgb(255 255 255 / 18%);
+    border: 1px solid var(--input-border);
     border-radius: 0.75rem;
-    background: rgb(255 255 255 / 8%);
+    background: var(--input-bg);
     color: var(--text);
     outline: none;
     font-family: inherit;
     font-size: 0.95rem;
     text-align: center;
     transition: border-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
 
     &:focus {
       border-color: rgb(255 214 0 / 50%);

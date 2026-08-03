@@ -288,9 +288,9 @@
   .rename-input {
     width: 80px;
     padding: 1px 4px;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid var(--input-border);
     border-radius: 4px;
-    background: rgb(255 255 255 / 12%);
+    background: var(--input-bg);
     color: var(--text);
     outline: none;
     font-weight: 800;
