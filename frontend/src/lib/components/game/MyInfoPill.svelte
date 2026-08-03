@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PencilIcon from "$lib/components/PencilIcon.svelte";
   import { locale } from "$lib/locale.svelte";
 
   interface Props {
@@ -77,7 +78,7 @@
         class="rename-btn"
         aria-label={locale.strings.renamePlayer}
         onclick={startRename}
-      >✏</button>
+      ><PencilIcon /></button>
     {/if}
   {/if}
 

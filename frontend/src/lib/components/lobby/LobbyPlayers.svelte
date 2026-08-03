@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PencilIcon from "$lib/components/PencilIcon.svelte";
   import { locale } from "$lib/locale.svelte";
   import type { GameState } from "$lib/network";
   import { flip } from "svelte/animate";
@@ -192,14 +193,14 @@
                 <span class="player-name-text" dir="auto">
                   {player.previewName ?? player.name}
                   {#if player.previewName && !isMe}
-                    <span class="preview-indicator" aria-hidden="true">✎</span>
+                    <span class="preview-indicator"><PencilIcon /></span>
                   {/if}
                   {#if isMe && !isHost}
                     <span class="you-tag">{locale.strings.you}</span>
                   {/if}
                 </span>
                 {#if isMe}
-                  <span class="rename-icon" aria-hidden="true">✎</span>
+                  <span class="rename-icon"><PencilIcon /></span>
                 {/if}
               </button>
               {#if isHost && !isHostPlayer}

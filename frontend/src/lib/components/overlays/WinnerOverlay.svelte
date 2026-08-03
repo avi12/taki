@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PencilIcon from "$lib/components/PencilIcon.svelte";
   import { locale } from "$lib/locale.svelte";
   import { type GameState } from "$lib/network";
   import { onDestroy, untrack } from "svelte";
@@ -214,7 +215,7 @@
         {#if isHost}
           {#if renamingPlayerNames.length > 0}
             <p class="renaming-hint" aria-live="polite">
-              ✎ {locale.strings.waitingForRename(renamingPlayerNames.join(", "), renamingPlayerNames.length)}
+              <PencilIcon /> {locale.strings.waitingForRename(renamingPlayerNames.join(", "), renamingPlayerNames.length)}
             </p>
           {/if}
           <button class="primary-btn" onclick={onPlayAgain}>{locale.strings.playAgain}</button>

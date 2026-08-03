@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { GameState } from "@taki/shared";
+  import PencilIcon from "$lib/components/PencilIcon.svelte";
   import TakiLogo from "$lib/components/TakiLogo.svg?raw";
   import { locale } from "$lib/locale.svelte";
   import { isNameAvailable } from "$lib/utils/players";
@@ -93,7 +94,7 @@
             class="rename-btn"
             aria-label={locale.strings.renamePlayer}
             onclick={startRename}
-          >✏</button>
+          ><PencilIcon /></button>
         {/if}
       {/if}
     </div>
