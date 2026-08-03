@@ -336,7 +336,7 @@
 </svelte:head>
 
 <LanguageToggle />
-<main dir={locale.lang === "he" ? "rtl" : "ltr"}>
+<main class:in-game={!isInLobby && !!gameRoomState} dir={locale.lang === "he" ? "rtl" : "ltr"}>
   <!-- ─── GAME BOARD ─── -->
   {#if !isInLobby && gameRoomState}
     <GameBoard
@@ -531,7 +531,7 @@
     --deco-opacity: 0.28;
 
     /* ── Fluid responsive sizing ── */
-    --card-w: clamp(80px, 18vw, 140px);
+    --card-w: clamp(72px, min(18vw, 13.5vh), 140px);
     --card-h: calc(var(--card-w) * 1.55);
     --card-br: clamp(10px, 2.5vw, 18px);
     --hand-overlap: clamp(-60px, -6.67vw, -34px);
@@ -626,6 +626,11 @@
     min-height: 100dvh;
     padding: 1rem;
     background: var(--bg-lobby);
+  }
+
+  main.in-game {
+    justify-content: flex-start;
+    padding: 0;
   }
 
   .lobby-overlay {

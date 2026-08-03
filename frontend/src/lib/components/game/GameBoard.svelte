@@ -487,5 +487,10 @@
     min-height: 100dvh;
     padding-bottom: var(--game-pad-bottom);
     background: var(--bg-game);
+
+    @media (width > 600px) {
+      overflow: hidden;
+      height: 100dvh;
+    }
   }
 </style>
