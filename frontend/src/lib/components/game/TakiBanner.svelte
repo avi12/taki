@@ -44,18 +44,20 @@
     align-items: center;
     margin-top: 0.5rem;
     padding: 0.5rem 1rem 0.5rem 0.75rem;
-    border: 1px solid color-mix(in srgb, var(--taki-color, #e8192c) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--taki-color, #e8192c) 45%, transparent);
     border-radius: 2rem;
     background:
       linear-gradient(
         135deg,
-        color-mix(in srgb, var(--taki-color, #e8192c) 15%, transparent),
-        rgb(0 0 0 / 30%)
-      );
+        color-mix(in srgb, var(--taki-color, #e8192c) 38%, transparent),
+        transparent
+      ),
+      rgb(12 18 38 / 92%);
     color: white;
     font-weight: 700;
     font-size: clamp(0.78rem, 2vw, 0.9rem);
     box-shadow: 0 4px 16px rgb(0 0 0 / 30%);
+    backdrop-filter: blur(8px);
 
     > svg {
       flex-shrink: 0;
