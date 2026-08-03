@@ -11,6 +11,9 @@
 		<meta name="description" content="Taki — real-time multiplayer card game. Create a room, share the link, and play with friends." />
 		<meta content="טאקי" property="og:title" />
 		<meta content="משחק קלפים מרובה משתתפים" property="og:description" />
+		<script>
+			if (navigator.maxTouchPoints > 0) document.documentElement.classList.add("touch");
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

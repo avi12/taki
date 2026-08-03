@@ -10,10 +10,12 @@
   background: linear-gradient(160deg, var(--card-color, #0d1b4b), var(--card-dark, #060e2a));
   color: white;
   box-shadow: var(--card-shadow);
+  user-select: none;
   transition:
     transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     box-shadow 0.25s;
   isolation: isolate;
+  -webkit-touch-callout: none;
 }
 
 /* White tilted oval on card face */

@@ -286,7 +286,7 @@
     width: 100%;
     padding: 1.5rem 1.5rem 0;
 
-    @media (width <= 600px) {
+    :global(html.touch) & {
       --hand-edge-padding: 44px;
       --available: calc(100vw - 2 * var(--hand-edge-padding));
 
@@ -315,7 +315,7 @@
       opacity 0.2s,
       margin 0.22s ease;
 
-    @media (width <= 600px) {
+    :global(html.touch) & {
       --min-card-w: 56px;
       --formula-card-w: calc(2 * var(--available) / (var(--card-count) + 1));
       --computed-card-w: max(var(--min-card-w), min(var(--card-w), var(--formula-card-w)));
@@ -327,7 +327,7 @@
       flex-shrink: 0;
       width: var(--computed-card-w);
       height: calc(var(--computed-card-w) * 1.55);
-      margin-inline-end: max(calc(-0.5 * var(--computed-card-w)), min(0px, var(--formula-margin)));
+      margin-inline-end: max(calc(-0.4 * var(--computed-card-w)), min(0px, var(--formula-margin)));
     }
 
     /* Invisible zone below the card so it doesn't escape the cursor when lifted */
@@ -356,7 +356,7 @@
       scale: 1.04;
       translate: 0 clamp(-20px, -3vh, -30px);
 
-      @media (width <= 600px) {
+      :global(html.touch) & {
         margin-inline-end: 4px;
         margin-inline-start: calc(var(--computed-card-w, 70px) * 0.45);
       }
@@ -365,7 +365,7 @@
     &:last-child {
       margin-inline-end: 0;
 
-      @media (width <= 600px) {
+      :global(html.touch) & {
         margin-inline-end: var(--hand-edge-padding);
       }
     }
