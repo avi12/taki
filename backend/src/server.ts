@@ -97,8 +97,9 @@ wss.on("connection", socket => {
 
   socket.on("close", () => {
     const { roomId = null, playerId = null } = connectionInfos.get(socket) ?? {};
-    const isTrackedConnection = !!roomId && !!playerId;
-    if (isTrackedConnection && roomId && playerId) {
+    const isCurrentConnectionOfPlayer = !!roomId && !!playerId
+      && playerConnections.get(playerId) === socket;
+    if (isCurrentConnectionOfPlayer && roomId && playerId) {
       playerConnections.delete(playerId);
       rooms.get(roomId)?.handlePlayerDisconnect(playerId);
     }

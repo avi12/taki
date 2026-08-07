@@ -397,10 +397,11 @@ export class GameRoom {
 
   private reconnectPlayer(player: GamePlayer, playerId: string, storageId: string) {
     const oldId = player.id;
+    const iPlayer = this.gameState.players.indexOf(player);
     player.id          = playerId;
     player.storageId   = storageId;
     player.isConnected = true;
-    const fullPlayer = this.findFullPlayer(oldId);
+    const fullPlayer = this.findFullPlayer(oldId) ?? this.fullPlayers[iPlayer];
     if (fullPlayer) {
       fullPlayer.id = playerId;
     }
@@ -1139,7 +1140,14 @@ export class GameRoom {
       return;
     }
 
+    const turnStartedAtBeforeDraw = this.gameState.turnStartedAt;
     this.drawCard(currentPlayerId);
+
+    const isTurnStillWedged = this.gameState.turnStartedAt === turnStartedAtBeforeDraw;
+    if (isTurnStillWedged) {
+      this.nextTurn(null);
+      this.broadcastState();
+    }
   }
 }
 
