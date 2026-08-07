@@ -21,11 +21,11 @@
   {#each opponents as opponent (opponent.id)}
     <div class="opponent-wrapper">
       <OpponentCard
+        drawPenaltyValue={gameRoomState.drawPenaltyValue}
         isActive={gameRoomState.players[gameRoomState.iCurrentPlayer].id === opponent.id}
         isEliminated={gameRoomState.eliminatedPlayers?.includes(opponent.id) ?? false}
         {opponent}
         {plusFourRecipientId}
-        plusTwoValue={gameRoomState.plusTwoValue}
         {stopSkippedPlayerId}
       />
     </div>

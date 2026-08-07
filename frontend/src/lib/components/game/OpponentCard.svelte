@@ -13,13 +13,13 @@
     isActive: boolean;
     isEliminated: boolean;
     plusFourRecipientId: string | null;
-    plusTwoValue: number;
+    drawPenaltyValue: number;
     stopSkippedPlayerId: string | null;
   }
 
   const {
     opponent, isActive, isEliminated,
-    plusFourRecipientId, plusTwoValue, stopSkippedPlayerId
+    plusFourRecipientId, drawPenaltyValue, stopSkippedPlayerId
   }: Props = $props();
 </script>
 
@@ -64,9 +64,9 @@
       <span class="overflow-count" dir="ltr">+{opponent.handCount - MAX_DISPLAYED_MINI_CARDS}</span>
     {/if}
   </div>
-  {#if plusTwoValue > 0 && isActive}
-    <div class="plus-two-badge" dir="ltr" in:scale={{ duration: 250 }}>
-      +{plusTwoValue}
+  {#if drawPenaltyValue > 0 && isActive}
+    <div class="draw-penalty-badge" dir="ltr" in:scale={{ duration: 250 }}>
+      +{drawPenaltyValue}
     </div>
   {/if}
   {#if isActive}
@@ -298,7 +298,7 @@
     }
   }
 
-  .plus-two-badge {
+  .draw-penalty-badge {
     position: absolute;
     top: 0;
     right: 0;

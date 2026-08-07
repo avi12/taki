@@ -36,36 +36,29 @@
     gameRoomState.pendingPlusThree ? !isPlusThreeDrawRequired : !isMyTurn
   );
 
-  const isPlusTwoBadgeOnDeck = $derived(
-    gameRoomState.plusTwoValue > 0 && isMyTurn
+  const isDrawPenaltyBadgeOnDeck = $derived(
+    gameRoomState.drawPenaltyValue > 0 && isMyTurn
   );
 
-  const isPlusFourBadgeOnDeck = $derived(
-    gameRoomState.plusFourValue > 0 && isMyTurn
-  );
-
-  const hasPlusFourToStack = $derived(
-    isPlusFourBadgeOnDeck && hand.some(card => card.value === CardValue.PlusFour && canPlayCard(card))
+  const hasDrawPenaltyCardToStack = $derived(
+    isDrawPenaltyBadgeOnDeck && hand.some(card =>
+      (card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour) && canPlayCard(card))
   );
 
   const isDeckHighlight = $derived(
     (isMyTurn && !gameRoomState.pendingPlusThree && hand.every(card => !canPlayCard(card)))
     || isPlusThreeDrawRequired
-    || (isPlusFourBadgeOnDeck && !hasPlusFourToStack)
+    || (isDrawPenaltyBadgeOnDeck && !hasDrawPenaltyCardToStack)
   );
 
   const isDeckHighlightOptional = $derived(
     (isPlusThreeRecipient && isPlusThreeBreakerAvailable)
-    || hasPlusFourToStack
+    || hasDrawPenaltyCardToStack
   );
 
   const drawCardAriaLabel = $derived.by(() => {
-    if (isPlusTwoBadgeOnDeck) {
-      return locale.strings.drawCardWithPenalty(gameRoomState.plusTwoValue);
-    }
-
-    if (isPlusFourBadgeOnDeck) {
-      return locale.strings.drawCardWithPenalty(gameRoomState.plusFourValue);
+    if (isDrawPenaltyBadgeOnDeck) {
+      return locale.strings.drawCardWithPenalty(gameRoomState.drawPenaltyValue);
     }
 
     return locale.strings.drawCard;
@@ -92,21 +85,15 @@
           </div>
         </div>
       </div>
-      <!-- +2 stack badge - only shown to the player who must draw -->
-      {#if isPlusTwoBadgeOnDeck}
-        <div class="plus-two-badge" dir="ltr" in:scale={{ duration: 250 }}>
-          +{gameRoomState.plusTwoValue}
+      <!-- Accumulated +2/+4 chain badge - only shown to the player who must respond -->
+      {#if isDrawPenaltyBadgeOnDeck}
+        <div class="draw-penalty-badge" dir="ltr" in:scale={{ duration: 250 }}>
+          +{gameRoomState.drawPenaltyValue}
         </div>
       {/if}
       <!-- +3 badge - shown to all recipients until they respond -->
       {#if isPlusThreeRecipient}
         <div class="plus-three-badge" dir="ltr" in:scale={{ duration: 250 }}>+3</div>
-      {/if}
-      <!-- +4 stack badge - shown when current player must respond to a +4 chain -->
-      {#if isPlusFourBadgeOnDeck}
-        <div class="plus-four-badge" dir="ltr" in:scale={{ duration: 250 }}>
-          +{gameRoomState.plusFourValue}
-        </div>
       {/if}
     </div>
   </button>
@@ -154,7 +141,7 @@
     }
   }
 
-  .plus-two-badge,
+  .draw-penalty-badge,
   .plus-three-badge {
     position: absolute;
     top: 0;
@@ -170,7 +157,7 @@
     animation: badge-pulse 1s ease-in-out infinite alternate;
   }
 
-  .plus-two-badge {
+  .draw-penalty-badge {
     background: linear-gradient(135deg, #e8192c, #c0101f);
     box-shadow: 0 4px 12px rgb(232 25 44 / 50%);
   }
@@ -178,23 +165,6 @@
   .plus-three-badge {
     background: linear-gradient(135deg, #9333ea, #6b21a8);
     box-shadow: 0 4px 12px rgb(147 51 234 / 50%);
-  }
-
-  .plus-four-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 20;
-    padding: 0.2rem 0.55rem;
-    border: 2px solid rgb(255 255 255 / 30%);
-    border-radius: 2rem;
-    background: linear-gradient(135deg, #d97706, #92400e);
-    color: white;
-    font-weight: 900;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 12px rgb(217 119 6 / 50%);
-    translate: 12px -12px;
-    animation: badge-pulse 1s ease-in-out infinite alternate;
   }
 
   @keyframes badge-pulse {

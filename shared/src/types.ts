@@ -54,8 +54,7 @@ export type GameState = {
   activeTakiColor: CardColor | null;
   isSuperTakiActive: boolean;
   deckCount: number;
-  plusTwoValue: number;
-  plusFourValue: number;
+  drawPenaltyValue: number;
   isPlusActive: boolean;
   pendingPlusThree: {
     fromId: string;

@@ -151,12 +151,8 @@ export function canPlayCard(card: Card, gameState: GameState, playerId: string, 
     return true;
   }
 
-  if (gameState.plusTwoValue > 0 && card.value !== CardValue.PlusTwo) {
-    return false;
-  }
-
-  if (gameState.plusFourValue > 0 && card.value !== CardValue.PlusFour) {
-    return false;
+  if (gameState.drawPenaltyValue > 0) {
+    return card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour;
   }
 
   if (card.value === CardValue.PlusThreeBreaker) {

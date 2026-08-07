@@ -37,8 +37,7 @@ interface GameStateSnapshot {
   direction: number;
   activeTakiColor: CardColor | null;
   isSuperTakiActive: boolean;
-  plusTwoValue: number;
-  plusFourValue: number;
+  drawPenaltyValue: number;
   isPlusActive: boolean;
   isCrownActive: boolean;
   hasPendingPlusThree: boolean;
@@ -80,8 +79,7 @@ export class GameRoom {
       activeTakiColor: null,
       isSuperTakiActive: false,
       deckCount: 0,
-      plusTwoValue: 0,
-      plusFourValue: 0,
+      drawPenaltyValue: 0,
       isPlusActive: false,
       pendingPlusThree: null,
       isCrownActive: false,
@@ -572,9 +570,8 @@ export class GameRoom {
 
     this.gameState.activeTakiColor  = null;
     this.gameState.isSuperTakiActive  = false;
-    this.gameState.plusTwoValue     = 0;
-    this.gameState.plusFourValue    = 0;
-    this.gameState.isPlusActive       = false;
+    this.gameState.drawPenaltyValue = 0;
+    this.gameState.isPlusActive     = false;
     this.gameState.pendingPlusThree = null;
     this.gameState.isCrownActive      = false;
     this.gameState.eliminatedPlayers  = [];
@@ -620,19 +617,16 @@ export class GameRoom {
     const isCrown = card.value === CardValue.Crown;
     const isSubjectToPlusRules = !isCrown && !this.gameState.isCrownActive;
     if (isSubjectToPlusRules) {
-      const isPlusTwoBlocked = this.gameState.plusTwoValue > 0 && card.value !== CardValue.PlusTwo;
-      if (isPlusTwoBlocked) {
-        return;
-      }
-
-      const isPlusFourBlocked = this.gameState.plusFourValue > 0 && card.value !== CardValue.PlusFour;
-      if (isPlusFourBlocked) {
+      const isDrawPenaltyStackCard = card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour;
+      const isDrawPenaltyBlocked = this.gameState.drawPenaltyValue > 0 && !isDrawPenaltyStackCard;
+      if (isDrawPenaltyBlocked) {
         return;
       }
     }
 
     const isWild = WILD_VALUES.has(card.value);
-    const isPlusFourCheck = card.value === CardValue.PlusFour && !isCrown && !this.gameState.isCrownActive;
+    const isPlusFourCheck = card.value === CardValue.PlusFour && !isCrown
+      && !this.gameState.isCrownActive && this.gameState.drawPenaltyValue === 0;
     if (isPlusFourCheck) {
       const activeColor = this.gameState.activeTakiColor ?? top.color;
       const isHoldingActiveColorCard = player.hand.some(
@@ -657,7 +651,8 @@ export class GameRoom {
       return;
     }
 
-    const isSubjectToColorValueRules = !isCrown && !isFreeBreaker && !this.gameState.isCrownActive;
+    const isSubjectToColorValueRules = !isCrown && !isFreeBreaker
+      && !this.gameState.isCrownActive && this.gameState.drawPenaltyValue === 0;
     if (isSubjectToColorValueRules) {
       const activeTaki = this.gameState.activeTakiColor;
       const colorMatch = activeTaki !== null ? card.color === activeTaki : card.color === top.color;
@@ -702,13 +697,12 @@ export class GameRoom {
     }
 
     if (card.value === CardValue.Crown) {
-      this.gameState.plusTwoValue     = 0;
-      this.gameState.plusFourValue    = 0;
-      this.gameState.isPlusActive       = false;
-      this.gameState.activeTakiColor  = null;
-      this.gameState.isSuperTakiActive  = false;
-      this.gameState.pendingPlusThree = null;
-      this.gameState.isCrownActive      = true;
+      this.gameState.drawPenaltyValue  = 0;
+      this.gameState.isPlusActive      = false;
+      this.gameState.activeTakiColor   = null;
+      this.gameState.isSuperTakiActive = false;
+      this.gameState.pendingPlusThree  = null;
+      this.gameState.isCrownActive     = true;
     } else if (isFreeBreaker) {
       this.gameState.isPlusActive = false;
 
@@ -765,7 +759,7 @@ export class GameRoom {
       this.gameState.turnStartedAt    = Date.now();
     } else if (card.value === CardValue.PlusFour) {
       this.gameState.isPlusActive = false;
-      this.gameState.plusFourValue += 4;
+      this.gameState.drawPenaltyValue += 4;
       this.nextTurn(null);
     } else {
       this.gameState.isPlusActive = false;
@@ -982,18 +976,16 @@ export class GameRoom {
       return;
     }
 
-    if (this.gameState.plusFourValue > 0) {
-      const count = this.gameState.plusFourValue;
-      this.gameState.plusFourValue = 0;
+    if (this.gameState.drawPenaltyValue > 0) {
+      const count = this.gameState.drawPenaltyValue;
+      this.gameState.drawPenaltyValue = 0;
       this.giveCards(playerId, count);
       this.nextTurn(null);
       this.logAndBroadcast(GameLogEvent.Draw, playerName, playerId, logBefore);
       return;
     }
 
-    const drawCount = this.gameState.plusTwoValue || 1;
-    this.gameState.plusTwoValue = 0;
-    this.giveCards(playerId, drawCount);
+    this.giveCards(playerId, 1);
 
     if (this.gameState.activeTakiColor) {
       const top = this.gameState.discardPile[this.gameState.discardPile.length - 1];
@@ -1014,8 +1006,7 @@ export class GameRoom {
       iCurrentPlayer,
       activeTakiColor,
       isSuperTakiActive,
-      plusTwoValue,
-      plusFourValue,
+      drawPenaltyValue,
       isPlusActive,
       isCrownActive,
       direction,
@@ -1029,8 +1020,7 @@ export class GameRoom {
       direction,
       activeTakiColor,
       isSuperTakiActive,
-      plusTwoValue,
-      plusFourValue,
+      drawPenaltyValue,
       isPlusActive,
       isCrownActive,
       hasPendingPlusThree: pendingPlusThree !== null,
@@ -1065,7 +1055,7 @@ export class GameRoom {
     }
 
     if (card?.value === CardValue.PlusTwo) {
-      this.gameState.plusTwoValue += 2;
+      this.gameState.drawPenaltyValue += 2;
     }
 
     let step = this.gameState.direction;
