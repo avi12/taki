@@ -691,7 +691,8 @@ export class GameRoom {
     const topColorBeforePlay = top.color;
     this.gameState.discardPile.push(card);
 
-    if (player.hand.length === 0) {
+    const isFinishingWithPlus = card.value === CardValue.Plus && player.hand.length === 0;
+    if (player.hand.length === 0 && !isFinishingWithPlus) {
       this.gameState.winner = playerId;
       this.gameState.wins[playerId] = (this.gameState.wins[playerId] ?? 0) + 1;
     }
@@ -715,7 +716,15 @@ export class GameRoom {
         this.nextTurn(card);
       }
     } else if (card.value === CardValue.Plus) {
-      this.gameState.isPlusActive = true;
+      if (isFinishingWithPlus) {
+        this.gameState.isPlusActive      = false;
+        this.gameState.activeTakiColor   = null;
+        this.gameState.isSuperTakiActive = false;
+        this.giveCards(playerId, 1);
+        this.nextTurn(null);
+      } else {
+        this.gameState.isPlusActive = true;
+      }
     } else if (card.value === CardValue.Direction) {
       this.gameState.isPlusActive = false;
       this.advanceTurnOrEndTaki(player, card);
