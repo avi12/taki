@@ -5,16 +5,13 @@
   interface Props {
     gameRoomState: GameState;
     myId: string;
-    isHost: boolean;
     plusFourRecipientId?: string | null;
     stopSkippedPlayerId?: string | null;
-    onRenamePlayer: (targetId: string, name: string) => void;
   }
 
   const {
-    gameRoomState, myId, isHost,
-    plusFourRecipientId = null, stopSkippedPlayerId = null,
-    onRenamePlayer
+    gameRoomState, myId,
+    plusFourRecipientId = null, stopSkippedPlayerId = null
   }: Props = $props();
 
   const opponents = $derived(gameRoomState.players.filter(player => player.id !== myId));
@@ -26,10 +23,7 @@
       <OpponentCard
         isActive={gameRoomState.players[gameRoomState.iCurrentPlayer].id === opponent.id}
         isEliminated={gameRoomState.eliminatedPlayers?.includes(opponent.id) ?? false}
-        {isHost}
-        {onRenamePlayer}
         {opponent}
-        players={gameRoomState.players}
         {plusFourRecipientId}
         plusTwoValue={gameRoomState.plusTwoValue}
         {stopSkippedPlayerId}

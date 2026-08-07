@@ -1,9 +1,7 @@
 <script lang="ts">
   import type { GameState } from "@taki/shared";
-  import PencilIcon from "$lib/components/PencilIcon.svelte";
   import TakiLogo from "$lib/components/TakiLogo.svg?raw";
   import { locale } from "$lib/locale.svelte";
-  import { isNameAvailable } from "$lib/utils/players";
   import { fade, scale } from "svelte/transition";
 
   const MAX_DISPLAYED_MINI_CARDS  = 12;
@@ -12,48 +10,17 @@
 
   interface Props {
     opponent: GameState["players"][number];
-    players: GameState["players"];
     isActive: boolean;
     isEliminated: boolean;
-    isHost: boolean;
     plusFourRecipientId: string | null;
     plusTwoValue: number;
     stopSkippedPlayerId: string | null;
-    onRenamePlayer: (targetId: string, name: string) => void;
   }
 
   const {
-    opponent, players, isActive, isEliminated, isHost,
-    plusFourRecipientId, plusTwoValue, stopSkippedPlayerId,
-    onRenamePlayer
+    opponent, isActive, isEliminated,
+    plusFourRecipientId, plusTwoValue, stopSkippedPlayerId
   }: Props = $props();
-
-  let isRenaming = $state(false);
-  let renameValue = $state("");
-
-  function startRename(): void {
-    renameValue = opponent.name;
-    isRenaming = true;
-  }
-
-  function confirmRename(): void {
-    const { name, id } = opponent;
-    const trimmed = renameValue.trim();
-    const isValidNewName = !!trimmed && trimmed !== name && isNameAvailable(players, id, trimmed);
-    if (isValidNewName) {
-      onRenamePlayer(id, trimmed);
-    }
-
-    isRenaming = false;
-  }
-
-  function onRenameKeydown(event: KeyboardEvent): void {
-    if (event.key === "Enter") {
-      confirmRename();
-    } else if (event.key === "Escape") {
-      isRenaming = false;
-    }
-  }
 </script>
 
 <div
@@ -76,28 +43,7 @@
     {/if}
   </div>
   <div class="player-label">
-    <div class="name-row">
-      {#if isRenaming}
-        <!-- svelte-ignore a11y_autofocus -->
-        <input
-          class="rename-input"
-          autofocus
-          dir="auto"
-          onblur={confirmRename}
-          onkeydown={onRenameKeydown}
-          bind:value={renameValue}
-        />
-      {:else}
-        <span class="player-name" dir="auto">{opponent.name}</span>
-        {#if isHost}
-          <button
-            class="rename-btn"
-            aria-label={locale.strings.renamePlayer}
-            onclick={startRename}
-          ><PencilIcon /></button>
-        {/if}
-      {/if}
-    </div>
+    <span class="player-name" dir="auto">{opponent.name}</span>
     <span class="player-count">{opponent.handCount} {locale.strings.cards}</span>
   </div>
   <div class="opponent-hand">
@@ -262,44 +208,6 @@
     @media (width <= 600px) {
       gap: 0;
       align-items: flex-start;
-    }
-  }
-
-  .name-row {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-  }
-
-  .rename-btn {
-    padding: 0 2px;
-    border: none;
-    background: none;
-    color: var(--text);
-    font-size: 0.65rem;
-    line-height: 1;
-    opacity: 40%;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 90%;
-    }
-  }
-
-  .rename-input {
-    width: 80px;
-    padding: 1px 4px;
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text);
-    outline: none;
-    font-weight: 800;
-    font-size: clamp(0.75rem, 2vw, 0.95rem);
-
-    @media (width <= 600px) {
-      width: 60px;
-      font-size: 0.7rem;
     }
   }
 

@@ -248,13 +248,11 @@ export class GameRoom {
         }
 
         break;
-      case ClientMessageType.HostRenamePlayer:
-        if (playerId === this.hostId) {
-          this.handleRename(message.targetId, message.name);
-        }
-
-        break;
     }
+  }
+
+  private get isMatchInProgress(): boolean {
+    return this.gameState.discardPile.length > 0 && !this.gameState.winner;
   }
 
   // ── State broadcast ───────────────────────────────────────────────────────
@@ -339,6 +337,10 @@ export class GameRoom {
   }
 
   private handleRename(playerId: string, name: string) {
+    if (this.isMatchInProgress) {
+      return;
+    }
+
     const player = this.findPlayer(playerId);
     if (!player) {
       return;
@@ -357,6 +359,10 @@ export class GameRoom {
   }
 
   private handlePreviewName(playerId: string, name: string) {
+    if (this.isMatchInProgress) {
+      return;
+    }
+
     const player = this.findPlayer(playerId);
     if (player) {
       player.previewName = name;

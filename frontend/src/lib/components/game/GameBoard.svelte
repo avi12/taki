@@ -30,7 +30,6 @@
     onSkipDisconnected: () => void;
     onKickPlayer: (targetId: string) => void;
     onHoldTurn: (isHeld: boolean) => void;
-    onRenamePlayer: (targetId: string, name: string) => void;
     onRename: (name: string) => void;
     onPreviewName: (name: string) => void;
     onCancelRename: () => void;
@@ -58,7 +57,6 @@
     onSkipDisconnected,
     onKickPlayer,
     onHoldTurn,
-    onRenamePlayer,
     onRename,
     onPreviewName,
     onCancelRename,
@@ -376,7 +374,7 @@
 </script>
 
 <div class="game-board">
-  <OpponentsRow {gameRoomState} {isHost} {myId} {onRenamePlayer} {plusFourRecipientId} {stopSkippedPlayerId} />
+  <OpponentsRow {gameRoomState} {myId} {plusFourRecipientId} {stopSkippedPlayerId} />
 
   <CenterArea
     {arrowAnimKey}
@@ -413,14 +411,7 @@
     {onSkipDisconnected}
   />
 
-  <MyInfoPill
-    handCount={hand.length}
-    {isHost}
-    {onCancelRename}
-    {onPreviewName}
-    {onRename}
-    {playerName}
-  />
+  <MyInfoPill handCount={hand.length} {playerName} />
 
   <PlayerHand
     {canPlayCard}

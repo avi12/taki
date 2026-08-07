@@ -370,7 +370,6 @@
         localStorage.setItem(STORAGE_KEY_PLAYER_NAME, name);
         network.sendRename(name);
       }}
-      onRenamePlayer={(targetId, name) => network.hostRenamePlayer(targetId, name)}
       onSkipDisconnected={skipDisconnected}
       onStartGame={startGame}
       {playerName}

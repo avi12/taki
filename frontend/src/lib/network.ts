@@ -389,13 +389,4 @@ export class GameNetwork {
       isHeld
     });
   }
-
-  hostRenamePlayer(targetId: string, name: string) {
-    this.send({
-      type: ClientMessageType.HostRenamePlayer,
-      playerId: this.id,
-      targetId,
-      name
-    });
-  }
 }

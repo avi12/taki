@@ -102,8 +102,7 @@ export enum ClientMessageType {
   ReorderPlayers       = "reorder_players",
   SetNoMercy           = "set_no_mercy",
   SkipDisconnected     = "skip_disconnected",
-  HoldDisconnectedTurn = "hold_disconnected_turn",
-  HostRenamePlayer     = "host_rename_player"
+  HoldDisconnectedTurn = "hold_disconnected_turn"
 }
 
 export type ServerMessage =
@@ -203,12 +202,6 @@ export type ClientMessage =
     type: ClientMessageType.HoldDisconnectedTurn;
     playerId: string;
     isHeld: boolean;
-  }
-  | {
-    type: ClientMessageType.HostRenamePlayer;
-    playerId: string;
-    targetId: string;
-    name: string;
   };
 
 export function parseServerMessage(data: string): ServerMessage {
