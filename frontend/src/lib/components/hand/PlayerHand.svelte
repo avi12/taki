@@ -145,14 +145,16 @@
      slide over smoothly instead of jumping once the outro finishes. */
   function handCardExitTransition(node: Element): TransitionConfig {
     const cardWidth = node instanceof HTMLElement ? node.offsetWidth : 0;
-    const marginInlineEnd = parseFloat(getComputedStyle(node).marginInlineEnd) || 0;
+    const style = getComputedStyle(node);
+    const marginInlineEnd = parseFloat(style.marginInlineEnd) || 0;
+    const startOpacity = parseFloat(style.opacity);
     return {
       duration: 320,
       easing: cubicOut,
       css: (visible, gone) => `
         margin-inline-end: ${visible * marginInlineEnd - gone * cardWidth}px;
         translate: 0 ${gone * 80}px;
-        opacity: ${visible};
+        opacity: ${visible * startOpacity};
         transition: none;
       `
     };
