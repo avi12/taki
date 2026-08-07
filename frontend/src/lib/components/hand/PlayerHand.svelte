@@ -7,7 +7,7 @@
   import { getCardColorHex, getCardColorDark, isActionCard } from "$lib/utils/cards";
   import { flip } from "svelte/animate";
   import { cubicOut } from "svelte/easing";
-  import { fly } from "svelte/transition";
+  import { fly, type TransitionConfig } from "svelte/transition";
 
   export type DragState = {
     cardId: number;
@@ -140,6 +140,23 @@
 
     hoveredWildId = null;
   }
+
+  /* Collapses the card's occupied slot while it flies out, so neighbors
+     slide over smoothly instead of jumping once the outro finishes. */
+  function handCardExitTransition(node: Element): TransitionConfig {
+    const cardWidth = node instanceof HTMLElement ? node.offsetWidth : 0;
+    const marginInlineEnd = parseFloat(getComputedStyle(node).marginInlineEnd) || 0;
+    return {
+      duration: 320,
+      easing: cubicOut,
+      css: (visible, gone) => `
+        margin-inline-end: ${visible * marginInlineEnd - gone * cardWidth}px;
+        translate: 0 ${gone * 80}px;
+        opacity: ${visible};
+        transition: none;
+      `
+    };
+  }
 </script>
 
 <!-- My hand -->
@@ -213,7 +230,7 @@
         peekedIndex = null;
         onCardPointerUp(event, handCard);
       }}
-      transition:fly={handCard.id === lastDrawnCardId
+      in:fly={handCard.id === lastDrawnCardId
         ? {
           y: -220,
           duration: 460,
@@ -223,6 +240,7 @@
           y: 80,
           duration: 320
         }}
+      out:handCardExitTransition
       animate:flip={{ duration: 280 }}
     >
       <div class="card-inner">
