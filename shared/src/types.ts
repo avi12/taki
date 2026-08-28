@@ -102,6 +102,7 @@ export enum ServerMessageType {
   Joined      = "joined",
   State       = "state",
   Kick        = "kick",
+  ServerBuild = "server_build",
   Error       = "error"
 }
 
@@ -134,6 +135,10 @@ export type ServerMessage =
     playerState: PlayerState;
   }
   | { type: ServerMessageType.Kick }
+  | {
+    type: ServerMessageType.ServerBuild;
+    buildId: string;
+  }
   | {
     type: ServerMessageType.Error;
     message: string;

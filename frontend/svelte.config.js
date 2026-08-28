@@ -1,4 +1,7 @@
+import packageJson from "./package.json" with { type: "json" };
 import adapter from "@sveltejs/adapter-static";
+
+const VERSION_POLL_INTERVAL_MS = 60_000;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -12,7 +15,11 @@ const config = {
       assets: "build",
       precompress: false,
       strict: true
-    })
+    }),
+    version: {
+      name: packageJson.version,
+      pollInterval: VERSION_POLL_INTERVAL_MS
+    }
   },
   vitePlugin: {
     dynamicCompileOptions: ({ filename }) =>

@@ -10,6 +10,7 @@ import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 
 const PORT = parseInt(process.env.PORT ?? "8080");
+const SERVER_BUILD_ID = process.env.K_REVISION ?? crypto.randomUUID();
 
 const httpServer = createServer((req, res) => {
   if (req.url === "/health") {
@@ -81,6 +82,10 @@ wss.on("connection", socket => {
   connectionInfos.set(socket, {
     roomId: null,
     playerId: null
+  });
+  send(socket, {
+    type: ServerMessageType.ServerBuild,
+    buildId: SERVER_BUILD_ID
   });
 
   socket.on("message", data => {

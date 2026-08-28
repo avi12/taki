@@ -5,6 +5,7 @@ import {
   ClientMessageType,
   type GameState,
   parseServerMessage,
+  type ServerMessage,
   ServerMessageType
 } from "@taki/shared";
 
@@ -60,12 +61,42 @@ export class GameNetwork {
   onStateUpdate: (state: GameState, hand: Card[]) => void          = () => {};
   onConnectionChange: (connected: boolean, error?: string) => void    = () => {};
   onKicked: () => void                                         = () => {};
+  onServerUpdated: () => void                                  = () => {};
 
   private socket: WebSocket | null = null;
+  private serverBuildId: string | null = null;
   private peekSocket: WebSocket | null = null;
   private reconnectParams: ReconnectParams | null = null;
   private reconnectAttempts = 0;
   private reconnectModalTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // ── Server build tracking ────────────────────────────────
+
+  private openSocket(onServerMessage: (message: ServerMessage) => void) {
+    const socket = new WebSocket(getWebSocketUrl());
+    socket.onmessage = (event: MessageEvent) => {
+      const message = parseServerMessage(event.data);
+      if (message.type === ServerMessageType.ServerBuild) {
+        this.trackServerBuild(message.buildId);
+        return;
+      }
+
+      onServerMessage(message);
+    };
+    return socket;
+  }
+
+  private trackServerBuild(buildId: string) {
+    const isFirstBuildSeen = this.serverBuildId === null;
+    if (isFirstBuildSeen) {
+      this.serverBuildId = buildId;
+      return;
+    }
+
+    if (this.serverBuildId !== buildId) {
+      this.onServerUpdated();
+    }
+  }
 
   // ── Initialization ────────────────────────────────────────────────────────
 
@@ -75,24 +106,8 @@ export class GameNetwork {
     this.hostId = roomId;
 
     return new Promise<string>((resolve, reject) => {
-      const socket = new WebSocket(getWebSocketUrl());
-      this.socket   = socket;
       let isResolved = false;
-
-      socket.onopen = () => {
-        socket.send(
-          JSON.stringify({
-            type: ClientMessageType.CreateRoom,
-            roomId,
-            playerId: roomId,
-            name,
-            storageId
-          })
-        );
-      };
-
-      socket.onmessage = (event: MessageEvent) => {
-        const message = parseServerMessage(event.data);
+      const socket = this.openSocket(message => {
         const isRoomCreatedResponse = message.type === ServerMessageType.RoomCreated && !isResolved;
         const isUnresolvedError     = message.type === ServerMessageType.Error        && !isResolved;
         if (isRoomCreatedResponse) {
@@ -112,6 +127,19 @@ export class GameNetwork {
           isResolved = true;
           reject(new Error(message.message));
         }
+      });
+      this.socket = socket;
+
+      socket.onopen = () => {
+        socket.send(
+          JSON.stringify({
+            type: ClientMessageType.CreateRoom,
+            roomId,
+            playerId: roomId,
+            name,
+            storageId
+          })
+        );
       };
 
       socket.onclose = () => {
@@ -138,10 +166,7 @@ export class GameNetwork {
     this.id     = crypto.randomUUID();
 
     return new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(getWebSocketUrl());
-      this.socket   = socket;
       let isResolved = false;
-
       const timeoutId = setTimeout(() => {
         if (!isResolved) {
           isResolved = true;
@@ -149,20 +174,7 @@ export class GameNetwork {
         }
       }, JOIN_TIMEOUT_MS);
 
-      socket.onopen = () => {
-        socket.send(
-          JSON.stringify({
-            type: ClientMessageType.JoinRoom,
-            roomId: hostId,
-            playerId: this.id,
-            name,
-            storageId
-          })
-        );
-      };
-
-      socket.onmessage = (event: MessageEvent) => {
-        const message = parseServerMessage(event.data);
+      const socket = this.openSocket(message => {
         if (message.type === ServerMessageType.State) {
           this.onStateUpdate(message.state, message.playerState.hand);
 
@@ -189,6 +201,19 @@ export class GameNetwork {
           clearTimeout(timeoutId);
           reject(new Error(message.message));
         }
+      });
+      this.socket = socket;
+
+      socket.onopen = () => {
+        socket.send(
+          JSON.stringify({
+            type: ClientMessageType.JoinRoom,
+            roomId: hostId,
+            playerId: this.id,
+            name,
+            storageId
+          })
+        );
       };
 
       socket.onclose = () => {
@@ -214,7 +239,7 @@ export class GameNetwork {
   }
 
   async startPeeking(hostId: string) {
-    const socket = new WebSocket(getWebSocketUrl());
+    const socket = this.openSocket(() => {});
     this.peekSocket = socket;
     socket.onopen = () => {
       socket.send(

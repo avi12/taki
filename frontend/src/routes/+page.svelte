@@ -17,6 +17,7 @@
   } from "$lib/storage";
   import { canPlayCard, getBestColorForHand, sortHand } from "$lib/utils/cards";
   import { isNameAvailable } from "$lib/utils/players";
+  import { reloadForUpdate } from "$lib/utils/reload";
   import { onMount } from "svelte";
   import { cubicIn } from "svelte/easing";
   import { fade, fly, type TransitionConfig } from "svelte/transition";
@@ -133,6 +134,8 @@
     network.onKicked = () => {
       isKicked = true;
     };
+
+    network.onServerUpdated = reloadForUpdate;
 
     const hash = location.hash.slice(1);
     const savedHostRoomId   = localStorage.getItem(STORAGE_KEY_HOST_ROOM_ID);

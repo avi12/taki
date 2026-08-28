@@ -1,5 +1,14 @@
 <script lang="ts">
+  import { updated } from "$app/state";
+  import { reloadForUpdate } from "$lib/utils/reload";
+
   const { children } = $props();
+
+  $effect(() => {
+    if (updated.current) {
+      reloadForUpdate();
+    }
+  });
 </script>
 
 <svelte:head>
