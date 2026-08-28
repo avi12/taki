@@ -13,6 +13,7 @@ export {
   CardValue,
   ClientMessageType,
   ServerMessageType,
+  isDrawPenaltyCard,
   type Card,
   type GamePlayer,
   type GameState,

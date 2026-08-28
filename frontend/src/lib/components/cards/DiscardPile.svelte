@@ -224,6 +224,20 @@
       animation: fx-ring 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
+    /* +6: orange burst */
+    &[data-effect="plus-six"] {
+      --ring-color: 255, 138, 0;
+
+      animation: fx-ring 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* +10: magenta double-ring burst */
+    &[data-effect="plus-ten"] {
+      --ring-color: 233, 30, 99;
+
+      animation: fx-double-ring 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
     /* Stop: cold blue freeze flash */
     &[data-effect="stop"] {
       background: rgb(100 190 255 / 0%);
@@ -270,6 +284,28 @@
     0%{ opacity: 100%; box-shadow: 0 0 0 0 rgb(var(--ring-color), 0.9); }
     60%{ opacity: 100%; box-shadow: 0 0 0 28px rgb(var(--ring-color), 0.25); }
     100%{ opacity: 0%; box-shadow: 0 0 0 55px rgb(var(--ring-color), 0); }
+  }
+
+  @keyframes fx-double-ring {
+    0% {
+      opacity: 100%;
+      box-shadow:
+        0 0 0 0 rgb(var(--ring-color), 0.95),
+        0 0 0 0 rgb(var(--ring-color), 0.4);
+    }
+
+    50% {
+      box-shadow:
+        0 0 0 24px rgb(var(--ring-color), 0.4),
+        0 0 0 48px rgb(var(--ring-color), 0.1);
+    }
+
+    100% {
+      opacity: 0%;
+      box-shadow:
+        0 0 0 48px rgb(var(--ring-color), 0),
+        0 0 0 86px rgb(var(--ring-color), 0);
+    }
   }
 
   @keyframes fx-freeze {

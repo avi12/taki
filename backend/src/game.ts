@@ -3,6 +3,8 @@ import {
   CardValue,
   ClientMessageType,
   ServerMessageType,
+  getDrawPenalty,
+  isDrawPenaltyCard,
   type Card,
   type GameState,
   type PlayerState,
@@ -466,10 +468,22 @@ export class GameRoom {
 
   private createDeck() {
     const colors = [CardColor.Red, CardColor.Blue, CardColor.Green, CardColor.Yellow];
-    const coloredValues = [
-      CardValue.One, CardValue.Three, CardValue.Four, CardValue.Five,
-      CardValue.Six, CardValue.Seven, CardValue.Eight, CardValue.Nine,
-      CardValue.PlusTwo, CardValue.Stop, CardValue.Taki, CardValue.Plus, CardValue.Direction
+    const coloredSlots: [CardValue, number][] = [
+      [CardValue.One,       2],
+      [CardValue.Three,     2],
+      [CardValue.Four,      2],
+      [CardValue.Five,      2],
+      [CardValue.Six,       2],
+      [CardValue.Seven,     2],
+      [CardValue.Eight,     2],
+      [CardValue.Nine,      2],
+      [CardValue.PlusTwo,   2],
+      [CardValue.Stop,      2],
+      [CardValue.Taki,      2],
+      [CardValue.Plus,      2],
+      [CardValue.Direction, 2],
+      [CardValue.PlusSix,   1],
+      [CardValue.PlusTen,   1]
     ];
     const wildSlots: [CardValue, number][] = [
       [CardValue.ChangeColor,      4],
@@ -484,8 +498,8 @@ export class GameRoom {
     const deck: Card[] = [];
 
     for (const color of colors) {
-      for (const value of coloredValues) {
-        for (let i = 0; i < 2; i++) {
+      for (const [value, slots] of coloredSlots) {
+        for (let i = 0; i < slots; i++) {
           deck.push({
             id: idCounter,
             color,
@@ -551,7 +565,8 @@ export class GameRoom {
     const firstPlayerHand = this.fullPlayers.find(player => player.id === firstPlayerId)?.hand ?? [];
 
     const actionValues = new Set<CardValue>([
-      CardValue.Plus, CardValue.Direction, CardValue.Stop, CardValue.PlusTwo, CardValue.Taki
+      CardValue.Plus, CardValue.Direction, CardValue.Stop, CardValue.Taki,
+      CardValue.PlusTwo, CardValue.PlusSix, CardValue.PlusTen
     ]);
     this.gameState.discardPile = [this.drawOneCard()];
     while (true) {
@@ -618,7 +633,7 @@ export class GameRoom {
     const isCrown = card.value === CardValue.Crown;
     const isSubjectToPlusRules = !isCrown && !this.gameState.isCrownActive;
     if (isSubjectToPlusRules) {
-      const isDrawPenaltyStackCard = card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour;
+      const isDrawPenaltyStackCard = isDrawPenaltyCard(card.value);
       const isDrawPenaltyBlocked = this.gameState.drawPenaltyValue > 0 && !isDrawPenaltyStackCard;
       if (isDrawPenaltyBlocked) {
         return;
@@ -760,8 +775,7 @@ export class GameRoom {
       this.gameState.turnStartedAt    = Date.now();
     } else if (card.value === CardValue.PlusFour) {
       this.gameState.isPlusActive = false;
-      this.gameState.drawPenaltyValue += 4;
-      this.nextTurn(null);
+      this.nextTurn(card);
     } else {
       this.gameState.isPlusActive = false;
 
@@ -778,7 +792,6 @@ export class GameRoom {
       color: card.color,
       value: card.value
     });
-
   }
 
   private handlePlusThreeResponse(peerId: string, isBreaker: boolean, breakerCardId: number | null) {
@@ -1055,8 +1068,8 @@ export class GameRoom {
       this.gameState.direction = this.gameState.direction === 1 ? -1 : 1;
     }
 
-    if (card?.value === CardValue.PlusTwo) {
-      this.gameState.drawPenaltyValue += 2;
+    if (card) {
+      this.gameState.drawPenaltyValue += getDrawPenalty(card.value);
     }
 
     let step = this.gameState.direction;

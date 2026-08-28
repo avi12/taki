@@ -1,7 +1,7 @@
 <script lang="ts">
   import TakiLogo from "$lib/components/TakiLogo.svg?raw";
   import { locale } from "$lib/locale.svelte";
-  import { CardValue, type GameState, type Card } from "$lib/network";
+  import { isDrawPenaltyCard, type GameState, type Card } from "$lib/network";
   import { scale } from "svelte/transition";
 
   interface Props {
@@ -41,8 +41,7 @@
   );
 
   const hasDrawPenaltyCardToStack = $derived(
-    isDrawPenaltyBadgeOnDeck && hand.some(card =>
-      (card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour) && canPlayCard(card))
+    isDrawPenaltyBadgeOnDeck && hand.some(card => isDrawPenaltyCard(card.value) && canPlayCard(card))
   );
 
   const isDeckHighlight = $derived(
@@ -85,7 +84,7 @@
           </div>
         </div>
       </div>
-      <!-- Accumulated +2/+4 chain badge - only shown to the player who must respond -->
+      <!-- Accumulated draw-penalty chain badge - only shown to the player who must respond -->
       {#if isDrawPenaltyBadgeOnDeck}
         <div class="draw-penalty-badge" dir="ltr" in:scale={{ duration: 250 }}>
           +{gameRoomState.drawPenaltyValue}

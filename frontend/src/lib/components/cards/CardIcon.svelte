@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CardValue } from "$lib/network";
+  import { CardValue, isDrawPenaltyCard } from "$lib/network";
 
   const { value }: { value: CardValue } = $props();
 
@@ -9,6 +9,8 @@
     [CardValue.Stop,            "stop"],
     [CardValue.ChangeColor,     "color"],
     [CardValue.PlusTwo,         "+2"],
+    [CardValue.PlusSix,         "+6"],
+    [CardValue.PlusTen,         "+10"],
     [CardValue.Plus,            "plus"],
     [CardValue.Direction,       "direction"],
     [CardValue.PlusThree,       "+3"],
@@ -18,6 +20,8 @@
   ]);
 
   const symbol = $derived(SYMBOL_MAP.get(value) ?? value);
+
+  const isDrawPenaltySymbol = $derived(isDrawPenaltyCard(value));
 </script>
 
 <div class="card-content-wrapper">
@@ -29,8 +33,8 @@
     {@render stop_svg()}
   {:else if symbol === "color"}
     {@render color_wheel_svg()}
-  {:else if symbol === "+2"}
-    {@render plus_two_svg()}
+  {:else if isDrawPenaltySymbol}
+    {@render plus_count_svg(symbol.slice(1))}
   {:else if symbol === "plus"}
     {@render plus_svg()}
   {:else if symbol === "direction"}
@@ -41,8 +45,6 @@
     {@render breaker_svg()}
   {:else if symbol === "crown"}
     {@render crown_svg()}
-  {:else if symbol === "+4"}
-    {@render plus_four_svg()}
   {:else}
     <span class="card-value">{value}</span>
   {/if}
@@ -129,7 +131,7 @@
   </svg>
 {/snippet}
 
-{#snippet plus_two_svg()}
+{#snippet plus_count_svg(count: string)}
   <svg class="card-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <text
       fill="currentColor"
@@ -143,35 +145,12 @@
     <text
       fill="currentColor"
       font-family="Impact, 'Arial Black', sans-serif"
-      font-size="54"
+      font-size={count.length > 1 ? 46 : 54}
       font-weight="900"
       text-anchor="middle"
       x="50"
       y="96"
-    >2</text>
-  </svg>
-{/snippet}
-
-{#snippet plus_four_svg()}
-  <svg class="card-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <text
-      fill="currentColor"
-      font-family="Impact, 'Arial Black', sans-serif"
-      font-size="46"
-      font-weight="900"
-      text-anchor="middle"
-      x="50"
-      y="45"
-    >+</text>
-    <text
-      fill="currentColor"
-      font-family="Impact, 'Arial Black', sans-serif"
-      font-size="54"
-      font-weight="900"
-      text-anchor="middle"
-      x="50"
-      y="96"
-    >4</text>
+    >{count}</text>
   </svg>
 {/snippet}
 

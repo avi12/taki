@@ -1,4 +1,10 @@
-import { CardColor, CardValue, type Card, type GameState } from "@taki/shared";
+import {
+  CardColor,
+  CardValue,
+  isDrawPenaltyCard,
+  type Card,
+  type GameState
+} from "@taki/shared";
 
 export function getCardColorHex(color: CardColor) {
   const map: Record<CardColor, string> = {
@@ -43,6 +49,8 @@ export enum CardEffect {
   Taki             = "taki",
   SuperTaki        = "supertaki",
   PlusTwo          = "plus-two",
+  PlusSix          = "plus-six",
+  PlusTen          = "plus-ten",
   Stop             = "stop",
   Plus             = "plus",
   Direction        = "direction",
@@ -59,6 +67,8 @@ export function getCardEffect(val: CardValue) {
     case CardValue.Taki:             return CardEffect.Taki;
     case CardValue.SuperTaki:        return CardEffect.SuperTaki;
     case CardValue.PlusTwo:          return CardEffect.PlusTwo;
+    case CardValue.PlusSix:          return CardEffect.PlusSix;
+    case CardValue.PlusTen:          return CardEffect.PlusTen;
     case CardValue.Stop:             return CardEffect.Stop;
     case CardValue.Plus:             return CardEffect.Plus;
     case CardValue.Direction:        return CardEffect.Direction;
@@ -79,34 +89,40 @@ const COLOR_ORDER: Record<CardColor, number> = {
   [CardColor.None]: 4
 };
 
-const VALUE_ORDER: Record<CardValue, number> = {
-  [CardValue.One]: 1,
-  [CardValue.Three]: 3,
-  [CardValue.Four]: 4,
-  [CardValue.Five]: 5,
-  [CardValue.Six]: 6,
-  [CardValue.Seven]: 7,
-  [CardValue.Eight]: 8,
-  [CardValue.Nine]: 9,
-  [CardValue.Plus]: 10,
-  [CardValue.Stop]: 11,
-  [CardValue.PlusTwo]: 12,
-  [CardValue.Taki]: 13,
-  [CardValue.Direction]: 14,
-  [CardValue.ChangeColor]: 15,
-  [CardValue.SuperTaki]: 16,
-  [CardValue.PlusThree]: 17,
-  [CardValue.PlusThreeBreaker]: 18,
-  [CardValue.Crown]: 19,
-  [CardValue.PlusFour]: 20
-};
+const VALUE_SORT_ORDER: CardValue[] = [
+  CardValue.One,
+  CardValue.Three,
+  CardValue.Four,
+  CardValue.Five,
+  CardValue.Six,
+  CardValue.Seven,
+  CardValue.Eight,
+  CardValue.Nine,
+  CardValue.Plus,
+  CardValue.Stop,
+  CardValue.PlusTwo,
+  CardValue.PlusSix,
+  CardValue.PlusTen,
+  CardValue.Taki,
+  CardValue.Direction,
+  CardValue.ChangeColor,
+  CardValue.SuperTaki,
+  CardValue.PlusThree,
+  CardValue.PlusThreeBreaker,
+  CardValue.Crown,
+  CardValue.PlusFour
+];
+
+const VALUE_ORDER = new Map<CardValue, number>(
+  VALUE_SORT_ORDER.map((value, iValue) => [value, iValue])
+);
 
 export function sortHand(cards: Card[]) {
   return [...cards].sort((left, right) => {
     const colorDiff = COLOR_ORDER[left.color] - COLOR_ORDER[right.color];
     return colorDiff !== 0
       ? colorDiff
-      : (VALUE_ORDER[right.value] ?? 99) - (VALUE_ORDER[left.value] ?? 99);
+      : (VALUE_ORDER.get(right.value) ?? 99) - (VALUE_ORDER.get(left.value) ?? 99);
   });
 }
 
@@ -152,7 +168,7 @@ export function canPlayCard(card: Card, gameState: GameState, playerId: string, 
   }
 
   if (gameState.drawPenaltyValue > 0) {
-    return card.value === CardValue.PlusTwo || card.value === CardValue.PlusFour;
+    return isDrawPenaltyCard(card.value);
   }
 
   if (card.value === CardValue.PlusThreeBreaker) {

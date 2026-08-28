@@ -17,6 +17,8 @@ export const CardValue = {
   Eight: "8",
   Nine: "9",
   PlusTwo: "+2",
+  PlusSix: "+6",
+  PlusTen: "+10",
   Stop: "stop",
   Taki: "taki",
   ChangeColor: "change_color",
@@ -29,6 +31,21 @@ export const CardValue = {
   PlusFour: "+4"
 } as const;
 export type CardValue = (typeof CardValue)[keyof typeof CardValue];
+
+export const DRAW_PENALTY_BY_VALUE: Partial<Record<CardValue, number>> = {
+  [CardValue.PlusTwo]: 2,
+  [CardValue.PlusFour]: 4,
+  [CardValue.PlusSix]: 6,
+  [CardValue.PlusTen]: 10
+};
+
+export function getDrawPenalty(value: CardValue): number {
+  return DRAW_PENALTY_BY_VALUE[value] ?? 0;
+}
+
+export function isDrawPenaltyCard(value: CardValue): boolean {
+  return getDrawPenalty(value) > 0;
+}
 
 export type Card = {
   id: number;
