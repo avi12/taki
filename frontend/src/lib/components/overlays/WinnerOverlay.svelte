@@ -1,7 +1,7 @@
 <script lang="ts">
   import PencilIcon from "$lib/components/PencilIcon.svelte";
   import { locale } from "$lib/locale.svelte";
-  import { type GameState } from "$lib/network";
+  import { getRenamingPlayers, type GameState } from "$lib/network";
   import { randomFloat } from "$lib/utils/random";
   import { onDestroy, untrack } from "svelte";
   import { fade, scale } from "svelte/transition";
@@ -9,6 +9,7 @@
   interface Props {
     gameRoomState: GameState;
     isHost: boolean;
+    myId: string;
     playerName: string;
     onPlayAgain: () => void;
     onRename: (name: string) => void;
@@ -17,7 +18,7 @@
   }
 
   const {
-    gameRoomState, isHost, playerName, onPlayAgain, onRename,
+    gameRoomState, isHost, myId, playerName, onPlayAgain, onRename,
     onPreviewName, onCancelRename
   }: Props = $props();
 
@@ -95,10 +96,12 @@
   );
 
   const renamingPlayerNames = $derived(
-    gameRoomState.players
-      .filter(player => player.previewName)
+    getRenamingPlayers(gameRoomState.players)
+      .filter(player => player.id !== myId)
       .map(player => player.name)
   );
+
+  const isAnyOtherPlayerRenaming = $derived(renamingPlayerNames.length > 0);
 </script>
 
 {#if gameRoomState.winner}
@@ -210,12 +213,17 @@
         </form>
 
         {#if isHost}
-          {#if renamingPlayerNames.length > 0}
-            <p class="renaming-hint" aria-live="polite">
+          {#if isAnyOtherPlayerRenaming}
+            <p id="renaming-hint" class="renaming-hint" aria-live="polite">
               <PencilIcon /> {locale.strings.waitingForRename(renamingPlayerNames.join(", "), renamingPlayerNames.length)}
             </p>
           {/if}
-          <button class="primary-btn" onclick={onPlayAgain}>{locale.strings.playAgain}</button>
+          <button
+            class="primary-btn"
+            aria-describedby={isAnyOtherPlayerRenaming ? "renaming-hint" : undefined}
+            disabled={isAnyOtherPlayerRenaming}
+            onclick={onPlayAgain}
+          >{locale.strings.playAgain}</button>
         {:else}
           <p class="waiting-for-host" aria-live="polite">
             {locale.strings.waitingForHost.before}<span dir="auto">{gameRoomState.players[0]?.name ?? ""}</span>{locale.strings.waitingForHost.after}
@@ -503,6 +511,13 @@
     &:hover:not(:disabled) {
       scale: 1.02;
       translate: 0 -3px;
+    }
+
+    &:disabled {
+      background: linear-gradient(135deg, #7a5257, #5c3f43);
+      opacity: 60%;
+      box-shadow: none;
+      cursor: not-allowed;
     }
   }
 </style>

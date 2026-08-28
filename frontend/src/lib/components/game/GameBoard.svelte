@@ -483,6 +483,7 @@
   <WinnerOverlay
     {gameRoomState}
     {isHost}
+    {myId}
     {onCancelRename}
     onPlayAgain={onStartGame}
     {onPreviewName}

@@ -62,6 +62,10 @@ export type GamePlayer = {
   storageId: string;
 };
 
+export function getRenamingPlayers(players: GamePlayer[]): GamePlayer[] {
+  return players.filter(player => player.previewName);
+}
+
 export type GameState = {
   players: GamePlayer[];
   iCurrentPlayer: number;

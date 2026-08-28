@@ -4,6 +4,7 @@ import {
   ClientMessageType,
   ServerMessageType,
   getDrawPenalty,
+  getRenamingPlayers,
   isDrawPenaltyCard,
   type Card,
   type GameState,
@@ -200,7 +201,7 @@ export class GameRoom {
         this.closeTaki(playerId);
         break;
       case ClientMessageType.StartGame:
-        this.startGame();
+        this.startGame(playerId);
         break;
       case ClientMessageType.AcceptPlusThree:
         this.handlePlusThreeResponse(playerId, false, null);
@@ -544,7 +545,14 @@ export class GameRoom {
       || card.value === startCard.value;
   }
 
-  private startGame() {
+  private startGame(requestingPlayerId: string) {
+    const isProceedingToNextRound  = this.gameState.winner !== null;
+    const isAnyOtherPlayerRenaming = getRenamingPlayers(this.gameState.players)
+      .some(player => player.id !== requestingPlayerId);
+    if (isProceedingToNextRound && isAnyOtherPlayerRenaming) {
+      return;
+    }
+
     const prevWinnerId = this.gameState.winner;
     this.deck = this.createDeck();
     this.shuffle(this.deck);
