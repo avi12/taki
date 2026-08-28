@@ -1,7 +1,7 @@
 {
   "name": "taki",
   "private": true,
-  "version": "0.1.137",
+  "version": "0.1.141",
   "license": "MIT",
   "type": "module",
   "scripts": {
