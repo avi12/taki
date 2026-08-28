@@ -6,9 +6,11 @@
   import HandAreaOverlay from "$lib/components/hand/HandAreaOverlay.svelte";
   import PlayerHand from "$lib/components/hand/PlayerHand.svelte";
   import { type DragState } from "$lib/components/hand/PlayerHand.svelte";
+  import ExplosionOverlay from "$lib/components/overlays/ExplosionOverlay.svelte";
   import WinnerOverlay from "$lib/components/overlays/WinnerOverlay.svelte";
   import { CardValue, type GameState, type Card, CardColor } from "$lib/network";
   import { cardDealRotation, getCardEffect, CardEffect } from "$lib/utils/cards";
+  import { onDestroy } from "svelte";
 
   interface Props {
     gameRoomState: GameState;
@@ -113,6 +115,38 @@
 
   // ── +4 recipient indicator ──
   let plusFourRecipientId = $state<string | null>(null);
+
+  // ── No Mercy explosion ──
+  const EXPLOSION_DURATION_MS = 2400;
+
+  let explodedPlayerId = $state<string | null>(null);
+  let previousEliminatedPlayerIds: string[] | null = null;
+  let explosionTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  $effect(() => {
+    const eliminatedPlayerIds = gameRoomState.eliminatedPlayers ?? [];
+    const knownEliminatedPlayerIds = previousEliminatedPlayerIds;
+    previousEliminatedPlayerIds = [...eliminatedPlayerIds];
+
+    if (!knownEliminatedPlayerIds) {
+      return;
+    }
+
+    const newlyEliminatedPlayerId = eliminatedPlayerIds.find(
+      playerId => !knownEliminatedPlayerIds.includes(playerId)
+    );
+    if (!newlyEliminatedPlayerId) {
+      return;
+    }
+
+    explodedPlayerId = newlyEliminatedPlayerId;
+    clearTimeout(explosionTimeoutId);
+    explosionTimeoutId = setTimeout(() => {
+      explodedPlayerId = null;
+    }, EXPLOSION_DURATION_MS);
+  });
+
+  onDestroy(() => clearTimeout(explosionTimeoutId));
 
   $effect(() => {
     const top = gameRoomState.discardPile.at(-1);
@@ -373,7 +407,7 @@
   const isSkipped = $derived(isStopAnimating && stopSkippedPlayerId === myId);
 </script>
 
-<div class="game-board">
+<div class="game-board" class:is-exploding={explodedPlayerId !== null}>
   <OpponentsRow {gameRoomState} {myId} {plusFourRecipientId} {stopSkippedPlayerId} />
 
   <CenterArea
@@ -442,6 +476,10 @@
     {stopNextPlayerName}
   />
 
+  {#if explodedPlayerId}
+    <ExplosionOverlay {explodedPlayerId} {myId} players={gameRoomState.players} />
+  {/if}
+
   <WinnerOverlay
     {gameRoomState}
     {isHost}
@@ -482,6 +520,32 @@
     @media (width > 600px) {
       overflow: hidden;
       height: 100dvh;
+    }
+
+    &.is-exploding {
+      animation: board-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+  }
+
+  @keyframes board-shake {
+    10%,
+ 90%{ translate: -2px 0; }
+
+    20%,
+ 80%{ translate: 3px 0; }
+
+    30%,
+ 50%,
+ 70%{ translate: -6px 0; }
+
+    40%,
+ 60%{ translate: 6px 0; }
+    100%{ translate: 0 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-board.is-exploding {
+      animation: none;
     }
   }
 </style>
