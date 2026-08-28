@@ -2,6 +2,7 @@
 set -e
 
 PROJECT_ID=studio-1414464010-d19f1
+ACCOUNT=taki-deploy@studio-1414464010-d19f1.iam.gserviceaccount.com
 REGION=europe-west1
 SERVICE_NAME=taki-backend
 IMAGE=gcr.io/$PROJECT_ID/$SERVICE_NAME
@@ -13,6 +14,7 @@ gcloud builds submit \
   --config backend/cloudbuild.yaml \
   --substitutions TAG_NAME="$IMAGE" \
   --project "$PROJECT_ID" \
+  --account "$ACCOUNT" \
   --suppress-logs \
   .
 
@@ -26,7 +28,8 @@ gcloud run deploy "$SERVICE_NAME" \
   --min-instances 1 \
   --max-instances 1 \
   --timeout 3600 \
-  --project "$PROJECT_ID"
+  --project "$PROJECT_ID" \
+  --account "$ACCOUNT"
 
 echo ""
 echo "Deployed. Copy the service URL above and set it in frontend/.env:"
