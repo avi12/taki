@@ -2,6 +2,7 @@
   import PencilIcon from "$lib/components/PencilIcon.svelte";
   import { locale } from "$lib/locale.svelte";
   import { type GameState } from "$lib/network";
+  import { randomFloat } from "$lib/utils/random";
   import { onDestroy, untrack } from "svelte";
   import { fade, scale } from "svelte/transition";
 
@@ -38,10 +39,6 @@
     size: number;
     shape: number;
   };
-
-  function randomFloat(): number {
-    return crypto.getRandomValues(new Uint32Array(1))[0] / 0xFFFFFFFF;
-  }
 
   function generateConfettiPieces(): ConfettiPiece[] {
     const colors = ["#E8192C", "#1565C0", "#2E7D32", "#FFD600", "#ffffff", "#ff9800", "#e91e63"];
