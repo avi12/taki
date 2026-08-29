@@ -83,6 +83,11 @@ const heStrings = {
   acceptDraw3: "קבל — משוך 3 קלפים",
   waitingResponses: (count: number) => `ממתין לתגובות שחקנים... (${count} נותרו)`,
   waitingForRename: (name: string, count: number) => `${name} ${count > 1 ? "משנים" : "משנה"} שם...`,
+  jokerRollTitle: "ג׳וקר!",
+  jokerRollPrompt: "הקש/י על הקובייה כדי להטיל",
+  jokerRolling: "מתגלגלת...",
+  jokerRollResult: (count: number) => `השחקן הבא ימשוך ${count} קלפים`,
+  jokerRollAriaLabel: "הטל קובייה",
   discardPile: "ערימת זריקה",
   dropHere: "זרוק כאן",
   shareTitle: "בוא לשחק טאקי!",
@@ -117,7 +122,8 @@ const heStrings = {
       "+3": "+3",
       "+3_block": "בלוק +3",
       crown: "כתר",
-      "+4": "+4"
+      "+4": "+4",
+      joker: "ג׳וקר"
     };
     const colorLabel = colorNames[color];
     return colorLabel ? `${colorLabel} ${valueNames[value] ?? value}` : (valueNames[value] ?? value);
@@ -194,6 +200,11 @@ const enStrings: typeof heStrings = {
   acceptDraw3: "Accept — Draw 3 cards",
   waitingResponses: count => `Waiting for responses... (${count} left)`,
   waitingForRename: (name: string, count: number) => `${name} ${count > 1 ? "are" : "is"} renaming...`,
+  jokerRollTitle: "Joker!",
+  jokerRollPrompt: "Tap the die to roll",
+  jokerRolling: "Rolling...",
+  jokerRollResult: count => `Next player draws ${count} cards`,
+  jokerRollAriaLabel: "Roll the die",
   discardPile: "Discard pile",
   dropHere: "Drop here",
   shareTitle: "Come play Taki!",
@@ -228,7 +239,8 @@ const enStrings: typeof heStrings = {
       "+3": "Plus 3",
       "+3_block": "Block Plus 3",
       crown: "Crown",
-      "+4": "Plus 4"
+      "+4": "Plus 4",
+      joker: "Joker"
     };
     const colorLabel = colorNames[color];
     return colorLabel ? `${colorLabel} ${valueNames[value] ?? value}` : (valueNames[value] ?? value);

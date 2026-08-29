@@ -1,6 +1,13 @@
 <script lang="ts">
-  import { CardColor, CardValue, type Card, type GameState } from "@taki/shared";
+  import {
+    CardColor,
+    CardValue,
+    type Card,
+    type GameState,
+    type JokerPenaltyAmount
+  } from "@taki/shared";
   import ColorPicker from "$lib/components/cards/ColorPicker.svelte";
+  import JokerDie from "$lib/components/cards/JokerDie.svelte";
   import GameBoard from "$lib/components/game/GameBoard.svelte";
   import LanguageToggle from "$lib/components/LanguageToggle.svelte";
   import Lobby from "$lib/components/lobby/Lobby.svelte";
@@ -24,6 +31,8 @@
 
   const DRAWN_CARD_EXEMPT_DURATION_MS = 1800;
   const COPY_FEEDBACK_DURATION_MS     = 2000;
+  const JOKER_DIE_SPIN_DURATION_MS    = 1100;
+  const JOKER_DIE_REVEAL_HOLD_MS      = 1500;
 
   const network = new GameNetwork();
   let gameRoomState = $state<GameState | null>(null);
@@ -45,6 +54,29 @@
   let currentWildCardId = $state<number | null>(null);
   let hoveredPickerColor = $state<CardColor | null>(null);
 
+  let jokerDieCardId = $state<number | null>(null);
+  let isJokerDieRolling = $state<boolean>(false);
+  let isJokerDieSpinDone = $state<boolean>(false);
+  let jokerDieAmount = $state<JokerPenaltyAmount | null>(null);
+
+  const isJokerDieRevealed = $derived(isJokerDieSpinDone && jokerDieAmount !== null);
+
+  function closeJokerDie(): void {
+    jokerDieCardId = null;
+    isJokerDieRolling = false;
+    isJokerDieSpinDone = false;
+    jokerDieAmount = null;
+  }
+
+  $effect(() => {
+    if (!isJokerDieRevealed) {
+      return;
+    }
+
+    const timeoutId = setTimeout(closeJokerDie, JOKER_DIE_REVEAL_HOLD_MS);
+    return () => clearTimeout(timeoutId);
+  });
+
   $effect(() => {
     if (!isColorPickerVisible || !gameRoomState) {
       return;
@@ -54,6 +86,18 @@
     if (!isMyTurn) {
       isColorPickerVisible = false;
       currentWildCardId = null;
+    }
+  });
+
+  $effect(() => {
+    const isWaitingForRoll = jokerDieCardId !== null && !isJokerDieRolling;
+    if (!isWaitingForRoll || !gameRoomState) {
+      return;
+    }
+
+    const isMyTurn = gameRoomState.players[gameRoomState.iCurrentPlayer].id === myId;
+    if (!isMyTurn) {
+      closeJokerDie();
     }
   });
 
@@ -110,6 +154,13 @@
       }
 
       const { discardPile, players } = newState;
+      if (jokerDieCardId !== null && jokerDieAmount === null) {
+        const rolledJoker = discardPile.find(card => card.id === jokerDieCardId);
+        if (rolledJoker?.jokerPenalty) {
+          jokerDieAmount = rolledJoker.jokerPenalty;
+        }
+      }
+
       gameRoomState = newState;
       hand = sortHand(newHand);
       isInLobby = discardPile.length === 0;
@@ -247,7 +298,22 @@
       return;
     }
 
+    if (card.value === CardValue.Joker) {
+      jokerDieCardId = card.id;
+      return;
+    }
+
     network.sendPlayCard(card.id);
+  }
+
+  function rollJokerDie(): void {
+    if (jokerDieCardId === null || isJokerDieRolling) {
+      return;
+    }
+
+    isJokerDieRolling = true;
+    setTimeout(() => (isJokerDieSpinDone = true), JOKER_DIE_SPIN_DURATION_MS);
+    network.sendPlayCard(jokerDieCardId);
   }
 
   function pickColor(color: CardColor): void {
@@ -286,6 +352,11 @@
   function pendingCardPlay(card: Card): void {
     if (card.value === CardValue.ChangeColor || card.value === CardValue.PlusFour) {
       network.sendPlayCard(card.id, getBestColorForHand(hand, card.id));
+      return;
+    }
+
+    if (card.value === CardValue.Joker) {
+      jokerDieCardId = card.id;
       return;
     }
 
@@ -437,6 +508,17 @@
       hoveredPickerColor = color;
     }}
     onpick={pickColor}
+  />
+{/if}
+
+<!-- Joker die: tap to roll how much the next player draws -->
+{#if jokerDieCardId !== null}
+  <JokerDie
+    amount={jokerDieAmount}
+    isRevealed={isJokerDieRevealed}
+    isRolling={isJokerDieRolling}
+    onroll={rollJokerDie}
+    totalPenalty={gameRoomState?.drawPenaltyValue ?? 0}
   />
 {/if}
 
