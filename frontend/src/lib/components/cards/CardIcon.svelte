@@ -1,7 +1,17 @@
 <script lang="ts">
-  import { CardValue, isDrawPenaltyCard } from "$lib/network";
+  import {
+    CardColor,
+    CardValue,
+    isDrawPenaltyCard,
+    JOKER_PENALTY_AMOUNTS,
+    type JokerPenaltyAmount
+  } from "$lib/network";
+  import { getCardColorHex } from "$lib/utils/cards";
 
-  const { value }: { value: CardValue } = $props();
+  const { value, jokerPenalty }: {
+    value: CardValue;
+    jokerPenalty?: JokerPenaltyAmount;
+  } = $props();
 
   const SYMBOL_MAP = new Map<CardValue, string>([
     [CardValue.SuperTaki,       "supertaki"],
@@ -16,12 +26,21 @@
     [CardValue.PlusThree,       "+3"],
     [CardValue.PlusThreeBreaker, "breaker"],
     [CardValue.Crown,            "crown"],
-    [CardValue.PlusFour,         "+4"]
+    [CardValue.PlusFour,         "+4"],
+    [CardValue.Joker,            "joker"]
   ]);
 
   const symbol = $derived(SYMBOL_MAP.get(value) ?? value);
 
-  const isDrawPenaltySymbol = $derived(isDrawPenaltyCard(value));
+  const isDrawPenaltySymbol = $derived(isDrawPenaltyCard(value) && value !== CardValue.Joker);
+
+  const jokerLabel = $derived(
+    jokerPenalty
+      ? `+${jokerPenalty}`
+      : `${JOKER_PENALTY_AMOUNTS[0]}–${JOKER_PENALTY_AMOUNTS[JOKER_PENALTY_AMOUNTS.length - 1]}`
+  );
+
+  const jokerInkColor = getCardColorHex(CardColor.None);
 </script>
 
 <div class="card-content-wrapper">
@@ -45,6 +64,8 @@
     {@render breaker_svg()}
   {:else if symbol === "crown"}
     {@render crown_svg()}
+  {:else if symbol === "joker"}
+    {@render joker_svg()}
   {:else}
     <span class="card-value">{value}</span>
   {/if}
@@ -233,6 +254,28 @@
   </svg>
 {/snippet}
 
+{#snippet joker_svg()}
+  <svg class="card-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M48 60 Q26 58 8 30 Q30 44 50 52 Z" fill="#E8192C" />
+    <path d="M52 60 Q74 58 92 30 Q70 44 50 52 Z" fill="#1565C0" />
+    <path d="M40 58 Q42 32 56 15 Q66 34 60 58 Z" fill="#2E7D32" />
+    <circle cx="8" cy="27" fill="#FFD600" r="7" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+    <circle cx="92" cy="27" fill="#FFD600" r="7" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+    <circle cx="57" cy="11" fill="#FFD600" r="7" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+    <rect fill={jokerInkColor} height="14" rx="7" width="66" x="17" y="55" />
+    <text
+      class="joker-label"
+      fill={jokerInkColor}
+      font-family="Impact, 'Arial Black', sans-serif"
+      font-size={jokerLabel.length > 2 ? 26 : 34}
+      font-weight="900"
+      text-anchor="middle"
+      x="50"
+      y="97"
+    >{jokerLabel}</text>
+  </svg>
+{/snippet}
+
 {#snippet plus_three_svg()}
   <svg class="card-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <text
@@ -279,6 +322,12 @@
     align-items: center;
     width: 100%;
     height: 100%;
+  }
+
+  /* Keeps "+8" / "2–10" in reading order inside the RTL board */
+  .joker-label {
+    unicode-bidi: isolate;
+    direction: ltr;
   }
 
   .card-value {

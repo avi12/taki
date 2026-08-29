@@ -85,7 +85,7 @@
     >
       <div class="card-inner">
         <div class="card-oval"></div>
-        <CardIcon value={discCard.value} />
+        <CardIcon jokerPenalty={discCard.jokerPenalty} value={discCard.value} />
       </div>
       {#if isTopCard && cardEffectValue !== null}
         <div class="card-effect" data-effect={getCardEffect(cardEffectValue)} onanimationend={onEffectEnd}></div>
@@ -272,6 +272,13 @@
       background: conic-gradient(#e8192c 0deg, #ffd600 90deg, #2e7d32 180deg, #1565c0 270deg, #e8192c 360deg);
       opacity: 0%;
       animation: fx-conic-spin 0.9s ease-out both;
+    }
+
+    /* Joker: gold double-ring burst */
+    &[data-effect="joker"] {
+      --ring-color: 255, 214, 0;
+
+      animation: fx-double-ring 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     /* No effect for plain numbers */

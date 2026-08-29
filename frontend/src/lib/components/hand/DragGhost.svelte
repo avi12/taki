@@ -59,7 +59,7 @@
 >
   <div class="card-inner">
     <div class="card-oval"></div>
-    <CardIcon value={ghostCard.value} />
+    <CardIcon jokerPenalty={ghostCard.jokerPenalty} value={ghostCard.value} />
   </div>
 </div>
 

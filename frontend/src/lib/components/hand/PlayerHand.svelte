@@ -247,7 +247,7 @@
     >
       <div class="card-inner">
         <div class="card-oval"></div>
-        <CardIcon value={handCard.value} />
+        <CardIcon jokerPenalty={handCard.jokerPenalty} value={handCard.value} />
       </div>
       {#if isMyTurn && playable && !isPlusThreeRecipient}
         <div class="playable-ring"></div>
