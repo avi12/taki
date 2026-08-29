@@ -28,7 +28,8 @@ export const CardValue = {
   PlusThree: "+3",
   PlusThreeBreaker: "+3_block",
   Crown: "crown",
-  PlusFour: "+4"
+  PlusFour: "+4",
+  Joker: "joker"
 } as const;
 export type CardValue = (typeof CardValue)[keyof typeof CardValue];
 
@@ -39,19 +40,31 @@ export const DRAW_PENALTY_BY_VALUE: Partial<Record<CardValue, number>> = {
   [CardValue.PlusTen]: 10
 };
 
+export const JOKER_PENALTY_AMOUNTS = [2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
+export type JokerPenaltyAmount = (typeof JOKER_PENALTY_AMOUNTS)[number];
+
 export function getDrawPenalty(value: CardValue): number {
   return DRAW_PENALTY_BY_VALUE[value] ?? 0;
 }
 
 export function isDrawPenaltyCard(value: CardValue): boolean {
-  return getDrawPenalty(value) > 0;
+  return value === CardValue.Joker || getDrawPenalty(value) > 0;
 }
 
 export type Card = {
   id: number;
   color: CardColor;
   value: CardValue;
+  jokerPenalty?: JokerPenaltyAmount;
 };
+
+export function getCardDrawPenalty(card: Card): number {
+  if (card.value === CardValue.Joker) {
+    return card.jokerPenalty ?? JOKER_PENALTY_AMOUNTS[0];
+  }
+
+  return getDrawPenalty(card.value);
+}
 
 export type GamePlayer = {
   id: string;
