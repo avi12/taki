@@ -59,6 +59,7 @@ export enum CardEffect {
   ChangeColor      = "change-color",
   Crown            = "crown",
   PlusFour         = "plus-four",
+  Joker            = "joker",
   Number           = "number"
 }
 
@@ -77,6 +78,7 @@ export function getCardEffect(val: CardValue) {
     case CardValue.ChangeColor:      return CardEffect.ChangeColor;
     case CardValue.Crown:            return CardEffect.Crown;
     case CardValue.PlusFour:         return CardEffect.PlusFour;
+    case CardValue.Joker:            return CardEffect.Joker;
     default:                         return CardEffect.Number;
   }
 }
@@ -110,7 +112,8 @@ const VALUE_SORT_ORDER: CardValue[] = [
   CardValue.PlusThree,
   CardValue.PlusThreeBreaker,
   CardValue.Crown,
-  CardValue.PlusFour
+  CardValue.PlusFour,
+  CardValue.Joker
 ];
 
 const VALUE_ORDER = new Map<CardValue, number>(
@@ -197,7 +200,8 @@ export function canPlayCard(card: Card, gameState: GameState, playerId: string, 
 
   const isWild = card.value === CardValue.ChangeColor
     || card.value === CardValue.SuperTaki
-    || card.value === CardValue.PlusThree;
+    || card.value === CardValue.PlusThree
+    || card.value === CardValue.Joker;
   if (isWild) {
     return !gameState.isSuperTakiActive;
   }

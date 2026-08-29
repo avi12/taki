@@ -14,11 +14,14 @@ export {
   CardValue,
   ClientMessageType,
   ServerMessageType,
+  getCardDrawPenalty,
   getRenamingPlayers,
   isDrawPenaltyCard,
+  JOKER_PENALTY_AMOUNTS,
   type Card,
   type GamePlayer,
   type GameState,
+  type JokerPenaltyAmount,
   type PlayerState
 } from "@taki/shared";
 
