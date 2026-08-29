@@ -3,9 +3,10 @@ import {
   CardValue,
   ClientMessageType,
   ServerMessageType,
-  getDrawPenalty,
+  getCardDrawPenalty,
   getRenamingPlayers,
   isDrawPenaltyCard,
+  JOKER_PENALTY_AMOUNTS,
   type Card,
   type GameState,
   type PlayerState,
@@ -31,7 +32,8 @@ const WILD_VALUES = new Set<CardValue>([
   CardValue.SuperTaki,
   CardValue.PlusThree,
   CardValue.Crown,
-  CardValue.PlusFour
+  CardValue.PlusFour,
+  CardValue.Joker
 ]);
 
 interface GameStateSnapshot {
@@ -492,7 +494,8 @@ export class GameRoom {
       [CardValue.PlusThree,        2],
       [CardValue.PlusThreeBreaker, 2],
       [CardValue.Crown,            2],
-      [CardValue.PlusFour,         4]
+      [CardValue.PlusFour,         4],
+      [CardValue.Joker,            2]
     ];
 
     let idCounter = 0;
@@ -525,6 +528,11 @@ export class GameRoom {
     }
 
     return deck;
+  }
+
+  private rollJokerPenalty() {
+    const iAmount = crypto.getRandomValues(new Uint32Array(1))[0] % JOKER_PENALTY_AMOUNTS.length;
+    return JOKER_PENALTY_AMOUNTS[iAmount];
   }
 
   private drawOneCard() {
@@ -696,15 +704,20 @@ export class GameRoom {
 
     const isWildColorCard = card.value === CardValue.ChangeColor || card.value === CardValue.PlusFour;
     const isWildColorAssignment = isWildColorCard && !!newColor;
+    const isColorInheritingCard = card.value === CardValue.PlusThreeBreaker || card.value === CardValue.Joker;
     if (isWildColorAssignment && newColor) {
       card.color = newColor;
-    } else if (card.value === CardValue.PlusThreeBreaker) {
+    } else if (isColorInheritingCard) {
       const lastColoredCard = [...this.gameState.discardPile]
         .reverse()
         .find(discCard => discCard.color !== CardColor.None);
       if (lastColoredCard) {
         card.color = lastColoredCard.color;
       }
+    }
+
+    if (card.value === CardValue.Joker) {
+      card.jokerPenalty = this.rollJokerPenalty();
     }
 
     const topColorBeforePlay = top.color;
@@ -781,7 +794,7 @@ export class GameRoom {
       };
       this.gameState.isPlusActive     = false;
       this.gameState.turnStartedAt    = Date.now();
-    } else if (card.value === CardValue.PlusFour) {
+    } else if (card.value === CardValue.PlusFour || card.value === CardValue.Joker) {
       this.gameState.isPlusActive = false;
       this.nextTurn(card);
     } else {
@@ -1077,7 +1090,7 @@ export class GameRoom {
     }
 
     if (card) {
-      this.gameState.drawPenaltyValue += getDrawPenalty(card.value);
+      this.gameState.drawPenaltyValue += getCardDrawPenalty(card);
     }
 
     let step = this.gameState.direction;
