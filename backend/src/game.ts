@@ -782,18 +782,22 @@ export class GameRoom {
         this.nextTurn(null);
       }
     } else if (card.value === CardValue.PlusThree) {
-      const otherIds = this.gameState.players
-        .filter(player => player.id !== playerId)
-        .map(player => player.id);
-      const isBreakable = player.hand.length > 0;
-      this.gameState.pendingPlusThree = {
-        fromId: playerId,
-        waiting: [...otherIds],
-        isBreakable,
-        acceptedCardIds: {}
-      };
-      this.gameState.isPlusActive     = false;
-      this.gameState.turnStartedAt    = Date.now();
+      const recipientIds = this.gameState.players
+        .filter(other => other.id !== playerId && !this.gameState.eliminatedPlayers.includes(other.id))
+        .map(other => other.id);
+      this.gameState.isPlusActive = false;
+
+      if (recipientIds.length === 0) {
+        this.nextTurn(null);
+      } else {
+        this.gameState.pendingPlusThree = {
+          fromId: playerId,
+          waiting: recipientIds,
+          isBreakable: player.hand.length > 0,
+          acceptedCardIds: {}
+        };
+        this.gameState.turnStartedAt = Date.now();
+      }
     } else if (card.value === CardValue.PlusFour || card.value === CardValue.Joker) {
       this.gameState.isPlusActive = false;
       this.nextTurn(card);
