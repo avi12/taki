@@ -33,6 +33,7 @@
   const COPY_FEEDBACK_DURATION_MS     = 2000;
   const JOKER_DIE_SPIN_DURATION_MS    = 1100;
   const JOKER_DIE_REVEAL_HOLD_MS      = 1500;
+  const JOKER_DIE_RESULT_TIMEOUT_MS   = 6000;
 
   const network = new GameNetwork();
   let gameRoomState = $state<GameState | null>(null);
@@ -90,15 +91,24 @@
   });
 
   $effect(() => {
-    const isWaitingForRoll = jokerDieCardId !== null && !isJokerDieRolling;
-    if (!isWaitingForRoll || !gameRoomState) {
+    if (jokerDieCardId === null || !gameRoomState) {
       return;
     }
 
     const isMyTurn = gameRoomState.players[gameRoomState.iCurrentPlayer].id === myId;
-    if (!isMyTurn) {
+    const isJokerOnDiscardPile = gameRoomState.discardPile.some(card => card.id === jokerDieCardId);
+    if (!isMyTurn && !isJokerOnDiscardPile) {
       closeJokerDie();
     }
+  });
+
+  $effect(() => {
+    if (!isJokerDieRolling || isJokerDieRevealed) {
+      return;
+    }
+
+    const timeoutId = setTimeout(closeJokerDie, JOKER_DIE_RESULT_TIMEOUT_MS);
+    return () => clearTimeout(timeoutId);
   });
 
   const isPlusThreeRecipient = $derived(
@@ -308,6 +318,12 @@
 
   function rollJokerDie(): void {
     if (jokerDieCardId === null || isJokerDieRolling) {
+      return;
+    }
+
+    const jokerCard = hand.find(card => card.id === jokerDieCardId);
+    if (!jokerCard || !isCardPlayable(jokerCard)) {
+      closeJokerDie();
       return;
     }
 
