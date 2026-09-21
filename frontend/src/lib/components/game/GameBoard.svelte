@@ -149,8 +149,15 @@
   onDestroy(() => clearTimeout(explosionTimeoutId));
 
   $effect(() => {
+    const isTakiSequenceOpen = gameRoomState.activeTakiColor !== null;
     const top = gameRoomState.discardPile.at(-1);
     if (!top || top.id === lastDiscardTopId) {
+      return;
+    }
+
+    const isSequenceStarter = top.value === CardValue.Taki || top.value === CardValue.SuperTaki;
+    const isEffectPending = isTakiSequenceOpen && !isSequenceStarter;
+    if (isEffectPending) {
       return;
     }
 
