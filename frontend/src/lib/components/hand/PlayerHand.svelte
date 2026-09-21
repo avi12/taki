@@ -376,11 +376,12 @@
       translate: 0 clamp(-55px, -10vh, -75px);
     }
 
-    /* Peeked card: neighbors spread apart to reveal the full card */
+    /* Peeked card: the following cards spread apart to reveal the full card.
+       Its own slot stays put - shifting it sideways slides it out from under
+       the cursor, which drops the hover and makes the card flicker. */
     &.peeked {
       z-index: 150;
       margin-inline-end: 4px;
-      margin-inline-start: calc(-1 * var(--hand-overlap));
       box-shadow: var(--card-hover-shadow);
       scale: 1.04;
       translate: 0 clamp(-20px, -3vh, -30px);
