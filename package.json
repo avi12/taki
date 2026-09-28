@@ -17,6 +17,7 @@
     "lint": "oxlint --type-aware --fix"
   },
   "devDependencies": {
+    "firebase-tools": "^15.24.0",
     "oxlint": "^1.74.0",
     "oxlint-tsgolint": "^0.25.0",
     "postcss-html": "^1.8.1"

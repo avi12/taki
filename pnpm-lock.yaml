@@ -9,6 +9,9 @@ importers:
 
   .:
     devDependencies:
+      firebase-tools:
+        specifier: ^15.24.0
+        version: 15.24.0(@types/node@26.1.1)
       oxlint:
         specifier: ^1.74.0
         version: 1.74.0(oxlint-tsgolint@0.25.0)
@@ -69,7 +72,7 @@ importers:
     dependencies:
       '@taki/shared':
         specifier: workspace:*
-        version: file:shared(@eslint/js@10.0.1(eslint@10.7.0))(@stylistic/eslint-plugin@5.10.0(eslint@10.7.0))(eslint-plugin-import-newlines@2.0.0(eslint@10.7.0))(eslint-plugin-import@2.32.0(eslint@10.7.0))(eslint-plugin-perfectionist@5.10.0(eslint@10.7.0)(typescript@6.0.3))(eslint@10.7.0)(globals@17.7.0)(typescript-eslint@8.64.0(eslint@10.7.0)(typescript@6.0.3))
+        version: link:../shared
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -110,9 +113,6 @@ importers:
       fallow:
         specifier: ^3.6.0
         version: 3.6.0
-      firebase-tools:
-        specifier: ^15.24.0
-        version: 15.24.0(@types/node@26.1.1)
       globals:
         specifier: ^17.7.0
         version: 17.7.0

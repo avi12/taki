@@ -7,9 +7,9 @@ import { promisify } from "node:util";
 
 const executeFile = promisify(execFile);
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const frontendRequire = createRequire(join(repositoryRoot, "frontend/package.json"));
-const firebaseEntryPoint = frontendRequire.resolve(
-  `firebase-tools/${frontendRequire("firebase-tools/package.json").bin.firebase}`
+const repositoryRequire = createRequire(join(repositoryRoot, "package.json"));
+const firebaseEntryPoint = repositoryRequire.resolve(
+  `firebase-tools/${repositoryRequire("firebase-tools/package.json").bin.firebase}`
 );
 
 async function readJsonFile(fileName) {
