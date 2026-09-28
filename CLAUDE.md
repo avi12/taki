@@ -8,6 +8,7 @@ A real-time multiplayer implementation of Taki, the Israeli card game. Players c
 - **Backend**: Node.js WebSocket server (`ws`), TypeScript, containerized and deployed to **GCP Cloud Run** (`taki-backend`, project `studio-1414464010-d19f1`)
 - **Shared**: `@taki/shared` workspace package for types shared between frontend and backend
 - **Deploy frontend**: `pnpm run deploy` from `frontend/` — lints, type-checks, builds, and pushes to Firebase Hosting
+  - The Firebase step runs through `scripts/deploy-hosting.mjs`, which creates the Hosting site when it is missing before deploying — from 2026-10-15 new Firebase projects no longer get one by default
 - **Deploy backend**: `bash backend/deploy.sh` from the repo root — builds a Docker image via Cloud Build, pushes to GCR, and deploys to Cloud Run
   - Requires **Cloud Build API** and **Cloud Run API** enabled in GCP project `studio-1414464010-d19f1`
   - After any backend deploy, update `frontend/.env` with the new `VITE_WS_URL` if the service URL changed, then redeploy frontend
