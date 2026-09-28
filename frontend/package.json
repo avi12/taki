@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite dev --port 5174",
     "build": "vite build",
-    "deploy": "pnpm lint:all && pnpx fallow fix --yes && pnpm build && cd .. && cross-env GOOGLE_APPLICATION_CREDENTIALS=firebase/taki.json pnpm exec firebase deploy",
+    "deploy": "pnpm lint:all && pnpx fallow fix --yes && pnpm build && cd .. && cross-env GOOGLE_APPLICATION_CREDENTIALS=firebase/taki.json node scripts/deploy-hosting.mjs",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check",
